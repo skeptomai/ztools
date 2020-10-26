@@ -238,6 +238,21 @@ typedef struct zobjectv4 {
 #define PAGE_MASK 511
 #define PAGE_SHIFT 9
 
+
+enum valtypes 
+{
+	val_unknown = 0,
+	val_long,
+	val_short,
+	val_byte,
+	val_dictword,
+	val_routine,
+	val_object,
+	val_property,
+	val_attribute,
+	val_actionnum
+};
+
 #define NIL 0
 #define ANYTHING 1
 #define VAR 2
@@ -253,6 +268,8 @@ typedef struct zobjectv4 {
 #define INDIRECT 12
 #define PROPNUM 13
 #define ATTRNUM 14
+#define ACTION 15
+#define SAME 16
 
 #define NONE 0
 #define TEXT 1
@@ -325,6 +342,7 @@ enum parser_types {
 
 typedef struct decode_t {
     unsigned int  first_pass;   /* Code pass flag                   */
+    unsigned int  sameflag;     /* SAME check pass flag             */
     unsigned long pc;           /* Current PC                       */
     unsigned long initial_pc;   /* Initial PC                       */
     unsigned long high_pc;      /* Highest PC in current subroutine */

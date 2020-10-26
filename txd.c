@@ -684,7 +684,7 @@ static int decode_opcode ()
 	case VARIABLE_OPERAND:
 	    code &= 0x3f;
 	    switch (code) {
-		caseline (0x01, "JE",              ANYTHING, ANYTHING, ANYTHING, ANYTHING, BRANCH, PLAIN);
+		caseline (0x01, "JE",              SAME,     SAME,     SAME,     SAME,     BRANCH, PLAIN);
 		caseline (0x02, "JL",              NUMBER,   NUMBER,   NIL,      NIL,      BRANCH, PLAIN);
 		caseline (0x03, "JG",              NUMBER,   NUMBER,   NIL,      NIL,      BRANCH, PLAIN);
 		caseline (0x04, "DEC_CHK",         VAR,      NUMBER,   NIL,      NIL,      BRANCH, PLAIN);
@@ -938,6 +938,88 @@ static int decode_opcode ()
 
 #undef caseline
 
+/* fix_sames - determine type of certain immediate operands */
+#ifdef __STDC__
+void fix_sames(void)
+#else
+void fix_sames()
+#endif
+{
+  int save_pc;
+  int opers;
+  int i;
+
+  if (option_symbols && !decode.first_pass) {
+	decode.first_pass = 1; /* prevent printing */
+	decode.sameflag = 1;
+	save_pc = decode.pc;
+	decode_parameters(&opers);
+	decode.pc = save_pc;
+	decode.first_pass = 0;
+  }
+
+  for (i = 0; i < 4; i++) {
+    if (opcode.par[i] == SAME) {
+	opcode.par[i] = ANYTHING;
+    }
+  }
+}
+
+#ifdef __STDC__
+void same_check(int opers, int varnum)
+#else
+void same_check(int opers, int varnum)
+int opers;
+int varnum;
+#endif
+{
+    int type;
+    int i;
+
+    opers;
+    if (varnum < 16) {
+	type = get_local_type(start_of_routine, varnum - 1);
+    } else {
+	type = get_global_type(start_of_routine, varnum - 16);
+    }
+    switch (type) {
+	case val_long:
+	case val_short:
+	case val_byte:
+	    type = NUMBER;
+	    break;
+	case val_dictword:
+	    type = LOW_ADDR;
+	    break;
+	case val_routine:
+	    type = ROUTINE;
+	    break;
+	case val_object:
+	    type = OBJECT;
+	    break;
+	case val_property:
+	    type = PROPNUM;
+	    break;
+	case val_attribute:
+	    type = ATTRNUM;
+	    break;
+	case val_actionnum:
+	    type = ACTION;
+	    break;
+	case val_unknown:
+	default:
+	    type = ANYTHING;
+	    break;
+    }
+    if (type != ANYTHING) {
+	for (i = 0; i < 4; i++) {
+	    if (opcode.par[i] == SAME) {
+		opcode.par[i] = type;
+	    }
+	}
+    }
+}
+
 /* decode_operands - Decode operands of opcode */
 
 #ifdef __STDC__
@@ -963,6 +1045,13 @@ int type;
     opcode.extra = extra;
     opcode.type = type;
  
+    for (i = 0; i < 4; i++) {
+	if (opcode.par[i] == SAME) {
+	    fix_sames();
+	    break;
+	}
+    }
+
     if (opcode.type == ILLEGAL)
 	return (BAD_OPCODE);
 
@@ -1108,6 +1197,8 @@ int opers;
 	case VARIABLE:
 	    value = (unsigned int) read_data_byte (&decode.pc);
 	    par = VAR;
+	    if (decode.sameflag)
+		same_check(opers, value);
 	    break;
 
 	case NO_OPERAND:
@@ -1347,6 +1438,22 @@ int opers;
 			tx_printf ("[%c%02x]", (option_inform) ? 'g' : 'G', value - 16);
 #endif
 		}
+	    }
+	    break;
+
+	case ACTION:
+	    if (decode.first_pass == 0) {
+	        show_verb_of_action(value,
+				    verb_table_base,
+				    verb_count,
+				    parser_type);
+	    }
+	    break;
+
+	case SAME:
+	    if (!decode.sameflag) {
+		    (void) fprintf (stderr, "\nFatal: Got an unexpected SAME\n");
+		    exit (EXIT_FAILURE);
 	    }
 	    break;
 

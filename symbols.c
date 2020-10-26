@@ -7,8 +7,7 @@
  *
  * Matthew T. Russotto 7 February 1998 matthew@russotto.net
  *
- * Future:  Add property type (e.g. name property contains dictionary words)
- *          Finish user-defined symbol table
+ * Future:  Finish user-defined symbol table
  */
 
 #define NAMELEN 80
@@ -21,16 +20,6 @@ enum symtypes {
 	sym_local,
 	sym_attribute,
 	sym_property
-};
-
-enum valtypes 
-{
-	val_unknown = 0,
-	val_long,
-	val_short,
-	val_byte,
-	val_dictword,
-	val_routine
 };
 
 struct symtab_entry_t {
@@ -91,6 +80,41 @@ char *tname;
 	return sym_unknown;
 }
 
+#ifdef __STDC__
+static int get_valtype_from_name(char *tname)
+#else
+static int get_valtype_from_name(tname)
+char *tname;
+#endif
+{
+	int ch = tname[0];
+
+	if (isupper(ch))
+		ch = tolower(ch);
+
+	switch (ch) {
+		case 'l':
+			return val_long;
+		case 's':
+			return val_short;
+		case 'b':
+			return val_byte;
+		case 'd':
+			return val_dictword;
+		case 'r':
+			return val_routine;
+		case 'p':
+			return val_property;
+		case 'a':
+			return val_attribute;
+		case 'o':
+			return val_object;
+		case 'v': /* verb */
+			return val_actionnum;
+	}
+	return val_unknown;
+}
+
 /*
  * init_symbols
  *
@@ -141,6 +165,7 @@ char *fname;
 				tmp = atoi(s);
 #endif
 				s = strtok(NULL, "\t\n\r "); /* skip name */
+				s = strtok(NULL, "\t\n\r "); /* skip type */
 				s = strtok(NULL, "\t\n\r ");
 				if ((s == NULL) && (tmp > global_entries))
 					global_entries = tmp;
@@ -214,6 +239,10 @@ char *fname;
 #endif
 				symname = strtok(NULL, "\t\n\r ");
 				s = strtok(NULL, "\t\n\r ");
+				if (s != NULL) {
+					global_names_table[tmp].valtype = (enum valtypes)get_valtype_from_name(s);
+					s = strtok(NULL, "\t\n\r ");
+				}
 				if (s == NULL) {
 					global_names_table[tmp].symtype = sym_global;
 					global_names_table[tmp].number = tmp;
@@ -327,4 +356,34 @@ int global_no;
 		return 1;
 	}
 	return 0;
+}
+
+#ifdef __STDC__
+int get_global_type(unsigned long start_of_routine,
+					 int global_no)
+#else
+int get_global_type(start_of_routine, global_no)
+unsigned long start_of_routine;
+int global_no;
+#endif
+{
+    start_of_routine;
+    if ((global_no < global_entries) && global_names_table[global_no].symtype == sym_global) {
+        return global_names_table[global_no].valtype;
+    }
+    return val_unknown;
+}
+
+#ifdef __STDC__
+int get_local_type(unsigned long start_of_routine,
+					 int local_no)
+#else
+int get_local_type(start_of_routine, local_no)
+unsigned long start_of_routine;
+int local_no;
+#endif
+{
+    start_of_routine;
+    local_no;
+    return val_unknown;
 }

@@ -883,6 +883,137 @@ unsigned long attr_names_base;
 	}
 }
 
+/* show_verb_of_action
+ *
+ * Display a verb name for a given action number.  Used by
+ * txd.
+ *
+ */
+
+#ifdef __STDC__
+void show_verb_of_action(int action,
+                         unsigned long verb_table_base,
+                         unsigned int verb_count,
+                         unsigned int parser_type)
+#else
+void show_verb_of_action(action,
+                         verb_table_base,
+                         verb_count,
+                         parser_type)
+int action;
+unsigned long verb_table_base;
+unsigned int verb_count;
+unsigned int parser_type;
+#endif
+{
+	unsigned long address, vname_address;
+	unsigned long verb_entry, parse_entry;
+	unsigned int entry_count, object_count, val, action_index;
+	int i;
+
+	tx_printf("<<");
+	address = verb_table_base;
+	for (i = 0; (unsigned int) i < verb_count; i++) {
+
+		if (parser_type == infocom6_grammar) {
+			unsigned long do_address, doio_address;
+			unsigned int verb_address;
+
+			verb_address = (unsigned int)address;
+			parse_entry = address;
+			action_index = read_data_word(&address);
+			if (action_index == (unsigned int) action) {
+				vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
+				if (vname_address != 0)
+					decode_text(&vname_address);
+				else
+					tx_printf("'no-verb'");
+				break;
+			}
+			read_data_word(&address);
+			do_address = read_data_word(&address);
+			doio_address = read_data_word(&address);
+
+			if (do_address) {
+				verb_entry = do_address;
+				entry_count = (unsigned int) read_data_word (&verb_entry);
+				while (entry_count --) {
+					parse_entry = verb_entry;
+					action_index = read_data_word(&verb_entry);
+					if (action_index == (unsigned int) action) {
+						vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
+						if (vname_address != 0)
+							decode_text(&vname_address);
+						else
+							tx_printf("'no-verb'");
+						break;
+					}
+					verb_entry += 4; /* skip preposition and object */
+				}
+			}
+
+			if (doio_address) {
+				verb_entry = doio_address;
+				entry_count = (unsigned int) read_data_word (&verb_entry);
+				while (entry_count --) {
+					parse_entry = verb_entry;
+					action_index = read_data_word(&verb_entry);
+					if (action_index == (unsigned int) action) {
+						vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
+						if (vname_address != 0)
+							decode_text(&vname_address);
+						else
+							tx_printf("'no-verb'");
+						break;
+					}
+					verb_entry += 8; /* skip preposition and direct object and preposition and indirect object*/
+				}
+			}
+		}
+		else {
+			/* Get the parse data address for this entry */
+
+			verb_entry = (unsigned long) read_data_word (&address);
+			entry_count = (unsigned int) read_data_byte (&verb_entry);
+
+			/* Look through the sentence structures looking for a match */
+
+			while (entry_count--) {
+				parse_entry = verb_entry;
+				if (parser_type >= inform_gv2) { /* GV2, variable length with terminator */
+					action_index = read_data_word(&verb_entry) & 0x3FF;
+					val = read_data_byte(&verb_entry);
+					while (val != ENDIT) {
+						read_data_word(&verb_entry);
+						val = read_data_byte(&verb_entry);
+					}
+				}
+				else if (parser_type != infocom_variable) { /* Index is in last (8th) byte */
+					verb_entry += 7;
+					action_index = (unsigned int) read_data_byte (&verb_entry);
+				} else { /* Index is in second byte */
+					object_count = (unsigned int) read_data_byte (&verb_entry);
+					action_index = (unsigned int) read_data_byte (&verb_entry);
+					verb_entry += verb_sizes[(object_count >> 6) & 0x03] - 2;
+				}
+
+				/* Check if this verb/sentence structure uses the action routine */
+
+				if (action_index == (unsigned int) action) {
+					vname_address = lookup_word(0, VERB_NUM(i, parser_type), VERB, (int) parser_type);
+					if (vname_address != 0)
+						decode_text(&vname_address);
+					else
+						tx_printf("no-verb");
+					break;
+				}
+			}
+		}
+	}
+	tx_printf(">>");
+
+}
+
 #ifdef __STDC__
 int is_gv2_parsing_routine(unsigned long parsing_routine,
 									unsigned long verb_table_base,
