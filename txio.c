@@ -257,6 +257,9 @@ zbyte_t *buffer;
     fseek (gfp, (long) page * PAGE_SIZE, SEEK_SET);
     if (fread (buffer, bytes_to_read, 1, gfp) != 1) {
 	(void) fprintf (stderr, "\nFatal: game file read error\n");
+	(void) fprintf (stderr, "Failed to read %d bytes at %lx\n", bytes_to_read, (long) page * PAGE_SIZE);
+        if (tx_screen_cols != 0)
+            tx_write_char('\n');
 	exit (EXIT_FAILURE);
     }
 
