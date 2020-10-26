@@ -3,7 +3,7 @@
  *
  * Inform 6 specific routines.
  * 
- * Matthew T. Russotto 7 February 1998 russotto@pond.com
+ * Matthew T. Russotto 7 February 1998 matthew@russotto.net
  *
  */
 

@@ -5,7 +5,7 @@
  *
  * Routines for printing out symbol names, however they may be derived.
  *
- * Matthew T. Russotto 7 February 1998 russotto@pond.com
+ * Matthew T. Russotto 7 February 1998 matthew@russotto.net
  *
  * Future:  Add property type (e.g. name property contains dictionary words)
  *          Finish user-defined symbol table
