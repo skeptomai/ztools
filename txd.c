@@ -53,6 +53,8 @@
  */
 
 #include "tx.h"
+#include "infinfo.h"
+#include "symbols.h"
 
 #define MAX_PCS 100
 
@@ -153,8 +155,6 @@ static unsigned long action_table_base = 0;
 static unsigned long preact_table_base = 0;
 static unsigned long prep_table_base = 0;
 static unsigned long prep_table_end = 0;
-
-static const int verb_sizes[4] = { 2, 4, 7, 7 };
 
 static unsigned long dict_start = 0;
 static unsigned long dict_end = 0;
@@ -330,7 +330,7 @@ const char *file_name;
 	tx_printf ("\n%ld bytes of data in code from %lx to %lx\n",
 		   (unsigned long) (end_data_pc - start_data_pc),
 		   (unsigned long) start_data_pc, (unsigned long) end_data_pc);
-    if ((decode.low_address - code_base) >= story_scaler) {
+    if ((decode.low_address - code_base) >= (unsigned long)story_scaler) {
 	tx_printf ("\n%ld bytes of data before code from %lx to %lx\n",
 		   (unsigned long) (decode.low_address - code_base),
 		   (unsigned long) code_base, (unsigned long) decode.low_address);
@@ -966,9 +966,9 @@ void fix_sames()
 }
 
 #ifdef __STDC__
-void same_check(int opers, int varnum)
+void same_check(UNUSED int opers, int varnum)
 #else
-void same_check(int opers, int varnum)
+void same_check(opers, varnum)
 int opers;
 int varnum;
 #endif
@@ -976,7 +976,6 @@ int varnum;
     int type;
     int i;
 
-    opers;
     if (varnum < 16) {
 	type = get_local_type(start_of_routine, varnum - 1);
     } else {
@@ -1065,7 +1064,7 @@ int type;
 	    dump_opcode (decode.pc, opcode.opcode, opcode.class, opcode.par, opcode.extra);
 	if (option_inform) {
 	    len = strlen (opcode_name);
-	    for (i = 0; i < len; i++)
+	    for (i = 0; i < (int)len; i++)
 		tx_printf ("%c", tolower (opcode_name[i]));
 	} else {
 	    tx_printf (opcode_name);
@@ -1373,11 +1372,12 @@ int opers;
 	    break;
 
 	case PCHAR:
-	    if (decode.first_pass == 0)
+	    if (decode.first_pass == 0) {
 		if (isprint ((char) value))
 		    tx_printf ("\'%c\'", (char) value);
 		else
 		    print_integer (value, addr_mode == BYTE_IMMED);
+            }
 	    break;
 
 	case VATTR:

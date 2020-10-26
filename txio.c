@@ -128,7 +128,7 @@ int max_version;
     header.globals = get_word (H_GLOBALS);
     header.dynamic_size = get_word (H_DYNAMIC_SIZE);
     header.flags = get_word (H_FLAGS);
-    for (i = 0; i < sizeof (header.serial); i++)
+    for (i = 0; i < (int)sizeof (header.serial); i++)
 	header.serial[i] = get_byte (H_SERIAL + i);
     header.abbreviations = get_word (H_ABBREVIATIONS);
     header.file_size = get_word (H_FILE_SIZE);
@@ -156,7 +156,7 @@ int max_version;
     header.specification_lo = get_byte (H_SPECIFICATION_LO);
     header.alphabet = get_word (H_ALPHABET);
     header.mouse_table = get_word (H_MOUSE_TABLE);
-    for (i = 0; i < sizeof (header.name); i++)
+    for (i = 0; i < (int)sizeof (header.name); i++)
 	header.name[i] = get_byte (H_NAME + i);
 
     if ((unsigned int) header.version < (unsigned int) min_version ||
@@ -735,7 +735,7 @@ int c;
 	    unicode_table_addr = get_word(header.mouse_table + 6);
 	    if (unicode_table_addr) {
 	    	length = get_byte(unicode_table_addr);
-	   	for (i = 0; i < unicode_table_addr; i++)
+	   	for (i = 0; i < length; i++)
 	    	    unicode_table[i + 155] = get_word(unicode_table_addr + 1 + i*2);
 	    }
 	}

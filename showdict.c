@@ -35,7 +35,7 @@ int columns;
     unsigned int separator_count, word_size, word_count, length;
     int i, flag;
 	int inform_flags = 0;
-	int dictpar1;
+	int dictpar1 = 0;
 	
     /* Force default column count if none specified */
 

@@ -5,6 +5,8 @@
  */
 
 #include "tx.h"
+#include "infinfo.h"
+#include "symbols.h"
 
 #ifdef __STDC__
 static void show_verb_parse_table
@@ -373,7 +375,7 @@ unsigned long *prep_table_end;
 			entry_count = read_data_byte (&first_entry);
 			if ((entry_count * 8 + 1) == (second_entry - first_entry)) {
 				/* this is the most ambiguous case */
-				for (i = 0; i < entry_count && (*parser_type == inform_gv1); i++) {
+				for (i = 0; i < (int)entry_count && (*parser_type == inform_gv1); i++) {
 					if (read_data_byte (&first_entry) > 6) {
 						*parser_type = inform_gv2;
 						break;
@@ -513,7 +515,7 @@ int symbolic;
 
 	unsigned int obj_count;
 	unsigned long obj_table_base, obj_table_end, obj_data_base, obj_data_end;
-	unsigned int inform_version;
+	unsigned short inform_version;
 	unsigned long class_numbers_base, class_numbers_end;
 	unsigned long property_names_base, property_names_end;
 	unsigned long attr_names_base, attr_names_end;
@@ -907,7 +909,7 @@ unsigned int parser_type;
 #endif
 {
 	unsigned long address, vname_address;
-	unsigned long verb_entry, parse_entry;
+	unsigned long verb_entry;
 	unsigned int entry_count, object_count, val, action_index;
 	int i;
 
@@ -917,10 +919,7 @@ unsigned int parser_type;
 
 		if (parser_type == infocom6_grammar) {
 			unsigned long do_address, doio_address;
-			unsigned int verb_address;
 
-			verb_address = (unsigned int)address;
-			parse_entry = address;
 			action_index = read_data_word(&address);
 			if (action_index == (unsigned int) action) {
 				vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
@@ -938,7 +937,6 @@ unsigned int parser_type;
 				verb_entry = do_address;
 				entry_count = (unsigned int) read_data_word (&verb_entry);
 				while (entry_count --) {
-					parse_entry = verb_entry;
 					action_index = read_data_word(&verb_entry);
 					if (action_index == (unsigned int) action) {
 						vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
@@ -956,7 +954,6 @@ unsigned int parser_type;
 				verb_entry = doio_address;
 				entry_count = (unsigned int) read_data_word (&verb_entry);
 				while (entry_count --) {
-					parse_entry = verb_entry;
 					action_index = read_data_word(&verb_entry);
 					if (action_index == (unsigned int) action) {
 						vname_address = lookup_word(0, i, VERB_V6, (int) parser_type);
@@ -979,7 +976,6 @@ unsigned int parser_type;
 			/* Look through the sentence structures looking for a match */
 
 			while (entry_count--) {
-				parse_entry = verb_entry;
 				if (parser_type >= inform_gv2) { /* GV2, variable length with terminator */
 					action_index = read_data_word(&verb_entry) & 0x3FF;
 					val = read_data_byte(&verb_entry);

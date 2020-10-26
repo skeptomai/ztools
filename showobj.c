@@ -5,11 +5,10 @@
  */
 
 #include "tx.h"
+#include "infinfo.h"
+#include "symbols.h"
 
 #ifdef __STDC__
-void configure_object_tables
-    (unsigned int *, unsigned long *, unsigned long *, unsigned long *,
-     unsigned long *);
 static unsigned int get_object_address
     (unsigned int);
 static void print_property_list
@@ -19,7 +18,6 @@ static void print_object
 static void print_object_desc
     (int);
 #else
-void configure_object_tables ();
 static unsigned int get_object_address ();
 static void print_property_list ();
 static void print_object ();

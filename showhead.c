@@ -347,7 +347,7 @@ void show_header ()
     /* Inform version -- overlaps name */
     if (inform >= 6) {
 	tx_printf ("Inform Version:           ");
-	for (i = 4; i < sizeof (header.name); i++)
+	for (i = 4; i < (int)sizeof (header.name); i++)
 	    tx_printf ("%c", (char) header.name[i]);
 	tx_printf ("\n");
     }

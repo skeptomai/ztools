@@ -52,6 +52,8 @@
  */
 
 #include "tx.h"
+#include "infinfo.h"
+#include "symbols.h"
 
 #ifdef __STDC__
 #ifndef HAS_GETOPT
@@ -311,11 +313,12 @@ static void fix_dictionary ()
 
 	/* Check that the word is in non-paged memory before writing */
 
-	if ((address + 4) < (unsigned long) header.resident_size)
+	if ((address + 4) < (unsigned long) header.resident_size) {
 	    if ((unsigned int) header.version <= V3)
 		set_byte (address + 2, (unsigned int) get_byte (address + 2) | 0x80);
 	    else
 		set_byte (address + 4, (unsigned int) get_byte (address + 4) | 0x80);
+        }
 
 	address += word_size;
     }

@@ -1,4 +1,6 @@
 #include "tx.h"
+#include "symbols.h"
+#include "infinfo.h"
 #include <fcntl.h>
 /*
  * symbols.c
@@ -119,10 +121,10 @@ char *tname;
  * init_symbols
  */
 #ifdef __STDC__
-void init_symbols(char *fname)
+void init_symbols(const char *fname)
 #else
 void init_symbols(fname)
-char *fname;
+const char *fname;
 #endif
 {
 	long tmp;
@@ -132,9 +134,6 @@ char *fname;
 	char *symname;
 	int symtype;
 	int routine = 0;
-	int global = 0;
-	int attribute = 0;
-	int property = 0;
 	
 	symfile = fopen(fname, "r");
 	if (symfile == NULL)
@@ -326,29 +325,26 @@ int prop_no;
 }
 
 #ifdef __STDC__
-int print_local_name(unsigned long start_of_routine,
-					 int local_no)
+int print_local_name(UNUSED unsigned long start_of_routine,
+                     UNUSED int local_no)
 #else
 int print_local_name(start_of_routine, local_no)
 unsigned long start_of_routine;
 int local_no;
 #endif
 {
-	start_of_routine;
-	local_no;
 	return 0;
 }
 
 #ifdef __STDC__
-int print_global_name(unsigned long start_of_routine,
-					 int global_no)
+int print_global_name(UNUSED unsigned long start_of_routine,
+                      UNUSED int global_no)
 #else
 int print_global_name(start_of_routine, global_no)
 unsigned long start_of_routine;
 int global_no;
 #endif
 {
-	start_of_routine;
 	if ((global_no < global_entries) && global_names_table[global_no].symtype == sym_global) {
 		tx_printf(global_names_table[global_no].name);
 		return 1;
@@ -357,15 +353,14 @@ int global_no;
 }
 
 #ifdef __STDC__
-int get_global_type(unsigned long start_of_routine,
-					 int global_no)
+int get_global_type(UNUSED unsigned long start_of_routine,
+                    UNUSED int global_no)
 #else
 int get_global_type(start_of_routine, global_no)
 unsigned long start_of_routine;
 int global_no;
 #endif
 {
-    start_of_routine;
     if ((global_no < global_entries) && global_names_table[global_no].symtype == sym_global) {
         return global_names_table[global_no].valtype;
     }
@@ -373,15 +368,13 @@ int global_no;
 }
 
 #ifdef __STDC__
-int get_local_type(unsigned long start_of_routine,
-					 int local_no)
+int get_local_type(UNUSED unsigned long start_of_routine,
+                   UNUSED int local_no)
 #else
 int get_local_type(start_of_routine, local_no)
 unsigned long start_of_routine;
 int local_no;
 #endif
 {
-    start_of_routine;
-    local_no;
     return val_unknown;
 }

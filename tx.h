@@ -49,6 +49,10 @@
 #define HAS_STRTOUL
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#define UNUSED __attribute__((__unused__))
+#endif
+
 #endif /* __STDC__ */
 
 /* Z types */
@@ -317,7 +321,7 @@ enum parser_types {
 	inform_gv2a
 };
 
-#define VERB_NUM(index, parser_type) (((parser_type) >= inform_gv2a)?(index):((unsigned int)(255-(index))))
+#define VERB_NUM(index, parser_type) (((parser_type) >= inform_gv2a)?((unsigned int)(index)):((unsigned int)(255-(index))))
 
 #define PREP 		0x08
 #define DESC 		0x20	/* infocom V1-5 only -- actually an adjective. */
@@ -385,7 +389,7 @@ extern int property_size_mask;
 
 extern zbyte_t *datap;
 
-extern option_inform;
+extern int option_inform;
 
 extern unsigned long file_size;
 
@@ -420,7 +424,7 @@ void tx_set_width ();
 #define INFORM_6		600
 #define INFORM_610		610
 
-/* Grammar prototypes */
+/* Grammar and object prototypes */
 #ifdef __STDC__
 void configure_parse_tables
     (unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned int *,
@@ -436,6 +440,11 @@ void show_syntax_of_action(int action,
 			unsigned long attr_names_base,
 			unsigned long prep_table_base);
 			
+void show_verb_of_action(int action,
+                         unsigned long verb_table_base,
+                         unsigned int verb_count,
+                         unsigned int parser_type);
+
 void show_syntax_of_parsing_routine(unsigned long parsing_routine,
 				    unsigned long verb_table_base,
 				    unsigned int verb_count,
@@ -447,12 +456,17 @@ void show_syntax_of_parsing_routine(unsigned long parsing_routine,
 int is_gv2_parsing_routine(unsigned long parsing_routine,
 				    unsigned long verb_table_base,
 				    unsigned int verb_count);
+void configure_object_tables
+    (unsigned int *, unsigned long *, unsigned long *, unsigned long *,
+     unsigned long *);
 #else
 void configure_parse_tables ();
 void show_verb_grammar ();
 void show_syntax_of_action();
+void show_verb_of_action();
 void show_syntax_of_parsing_routine();
 int is_gv2_parsing_routine();
+void configure_object_tables ();
 #endif
 
 #ifndef SEEK_SET
