@@ -5,7 +5,7 @@ NROFF	= nroff
 
 #Some systems declare getopt, others do not.  Pick whichever works
 #CFLAGS = -O -DHAS_GETOPT
-CFLAGS = -O
+CFLAGS = -O --std=c89
 LDFLAGS =
 LIBS =
 
