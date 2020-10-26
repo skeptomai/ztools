@@ -117,8 +117,6 @@ char *tname;
 
 /*
  * init_symbols
- *
- * Prints the name of the attribute, if known.
  */
 #ifdef __STDC__
 void init_symbols(char *fname)
