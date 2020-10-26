@@ -382,7 +382,7 @@ unsigned long *prep_table_end;
 					}
 					for (j = 1; j < 7; j++) {
 						val = read_data_byte (&first_entry);
-						if ((val >= 9) || (val <= 15) || (val >= 112) || (val <= 127)) {
+						if (((val >= 9) && (val <= 15)) || ((val >= 112) && (val <= 127))) {
 								*parser_type = inform_gv2;
 								break;
 						}
