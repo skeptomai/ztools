@@ -1297,15 +1297,6 @@ int opers;
 		tx_printf ("%s", (option_inform) ? "sp" : "(SP)+");
 	    else
 		print_variable (value);
-#ifdef DELETEME
-	    if (value < 16) {
-		if (option_inform)
-		    tx_printf ("local%d", value - 1);
-		else
-		    tx_printf ("L%02x", value - 1);
-	    } else
-		tx_printf ("%c%02x", (option_inform) ? 'g' : 'G', value - 16);
-#endif
 	} else {
 	    if ((int) value > 0 && (int) value < 16 &&
 		(int) value > locals_count)
@@ -1484,16 +1475,6 @@ int opers;
 		tx_printf ("[");
 		print_variable (value);
 		tx_printf ("]");
-#ifdef DELETEME
-		if (value < 16) {
-		    if (option_inform)
-			tx_printf ("[local%d]", value - 1);
-		    else
-			tx_printf ("[L%02x]", value - 1);
-		} else
-		    tx_printf ("[%c%02x]", (option_inform) ? 'g' : 'G',
-			       value - 16);
-#endif
 	    }
 	}
 	break;
@@ -1541,16 +1522,6 @@ static int decode_extra ()
 		tx_printf ("%s", (option_inform) ? "sp" : "-(SP)");
 	    else
 		print_variable (addr);
-#ifdef DELETEME
-	    if (addr < 16) {
-		if (option_inform)
-		    tx_printf ("local%ld", (unsigned long) (addr - 1));
-		else
-		    tx_printf ("L%02lx", (unsigned long) (addr - 1));
-	    } else
-		tx_printf ("%c%02lx", (option_inform) ? 'g' : 'G',
-			   (unsigned long) (addr - 16));
-#endif
 	    if (opcode.extra == BOTH)
 		tx_printf (" ");
 	} else {
