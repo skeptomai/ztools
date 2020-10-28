@@ -42,55 +42,55 @@ static const int verb_sizes[4] = {2, 4, 7, 0};
  * Format of the verb parse tables:
  *
  * base:
- *	  Table of pointers (2 bytes) to each verb entry. Each verb in the
- *	  dictionary has an index (1 byte) into this table. The index in the
- *	  dictionary is inverted so an index of 255 = table entry 0, etc.
- *	  In GV2 the index is 2 bytes and it is not inverted -- except that
+ *    Table of pointers (2 bytes) to each verb entry. Each verb in the
+ *    dictionary has an index (1 byte) into this table. The index in the
+ *    dictionary is inverted so an index of 255 = table entry 0, etc.
+ *    In GV2 the index is 2 bytes and it is not inverted -- except that
  *    Inform 6.10 uses the old method.  Thus type GV2A is used internally
  *    to indicate the 2-byte form which will presumably be used in
  *    later Inform versions.
  *
- *	  Next comes the parse data for each verb pointed to by the table of
- *	  pointers. The format of the parse data varies between games. Basically,
- *	  each entry has a count (1 byte) of parse structures corresponding to
- *	  different sentence structures. For example, the verb 'take' in the
- *	  dictionary may have two forms; 'take object' or 'take object with object'.
- *	  Each form has an index (1 byte) into the pre-action and action routine
- *	  tables.
+ *    Next comes the parse data for each verb pointed to by the table of
+ *    pointers. The format of the parse data varies between games. Basically,
+ *    each entry has a count (1 byte) of parse structures corresponding to
+ *    different sentence structures. For example, the verb 'take' in the
+ *    dictionary may have two forms; 'take object' or 'take object with object'.
+ *    Each form has an index (1 byte) into the pre-action and action routine
+ *    tables.
  *
- *	  Next come the action routine tables. There is an entry (2 bytes) for
- *	  each verb form index. The entries are packed addresses of the Z-code
- *	  routines that perform the main verb processing.
+ *    Next come the action routine tables. There is an entry (2 bytes) for
+ *    each verb form index. The entries are packed addresses of the Z-code
+ *    routines that perform the main verb processing.
  *
- *	  Next come the pre-action routine tables. There is an entry (2 bytes) for
- *	  each verb form index. The entries are packed addresses of the Z-code
- *	  routines that are called before the main verb action routine.
+ *    Next come the pre-action routine tables. There is an entry (2 bytes) for
+ *    each verb form index. The entries are packed addresses of the Z-code
+ *    routines that are called before the main verb action routine.
  *
- *	  Finally, there is a list of prepositions that can be used by any verb
- *	  in the verb parse table. This list has a count (2 bytes) followed by
- *	  the address of the preposition in the dictionary and an index.
+ *    Finally, there is a list of prepositions that can be used by any verb
+ *    in the verb parse table. This list has a count (2 bytes) followed by
+ *    the address of the preposition in the dictionary and an index.
  *
  * Verb parse entry format:
  *
- *	  The format of the data varies between games. The information in the
- *	  entry is the same though:
+ *    The format of the data varies between games. The information in the
+ *    entry is the same though:
  *
- *	  An object count (0, 1 or 2)
- *	  A preposition index for the verb
- *	  Data for object(s) 1
- *	  A preposition index for the objects
- *	  Data for object(s) 2
- *	  A pre-action/action routine table index
+ *    An object count (0, 1 or 2)
+ *    A preposition index for the verb
+ *    Data for object(s) 1
+ *    A preposition index for the objects
+ *    Data for object(s) 2
+ *    A pre-action/action routine table index
  *
- *	  This means a sentence can have the following form:
+ *    This means a sentence can have the following form:
  *
- *	  verb [+ prep] 							 'look [at]'
- *	  verb [+ prep] + object					 'look [at] book'
+ *	  verb [+ prep] 				 'look [at]'
+ *	  verb [+ prep] + object			 'look [at] book'
  *	  verb [+ prep] + object [+ prep] + object	 'look [at] book [with] glasses'
  *
- *	  The verb and prepositions can only be a single word each. The object
- *	  could be a multiple words 'green book' or a list depending on the object
- *	  data.
+ *    The verb and prepositions can only be a single word each. The object
+ *    could be a multiple words 'green book' or a list depending on the object
+ *    data.
  *
  * Notes:
  *
@@ -114,14 +114,14 @@ static const int verb_sizes[4] = {2, 4, 7, 0};
  * uses the flags bytes in the dictionary entry in a slightly different
  * manner than Infocom games.
  *
- * Graphic (V6) Infocom games use a different grammar format.  The basic  
- * elements are mostly still there, but in a different set of tables.  
+ * Graphic (V6) Infocom games use a different grammar format.  The basic
+ * elements are mostly still there, but in a different set of tables.
  * The table of pointers to the verb entries is gone.  Instead, the
  * first word of 'extra' dictionary information contains a pointer to the
  * verb entry. Pointers to the action and preaction tables are in
- * the next-to-last and last global variables respectively, but in practice 
+ * the next-to-last and last global variables respectively, but in practice
  * the tables are in their usual location right after the verb grammar table,
- * which is in its usual location at the base of dynamic memory.  The 
+ * which is in its usual location at the base of dynamic memory.  The
  * verb grammar table has the following format
  *
  * Bytes 0-1: Action/pre-action index of the 0-object entry.  That is, action
@@ -164,7 +164,7 @@ static const int verb_sizes[4] = {2, 4, 7, 0};
  * Note also that the dictionary flags have moved from the first to the last byte
  * of each dictionary entry, and that while Zork Zero has only three bytes of
  * extra dictionary data (as with V1-5), Shogun and Arthur have four.
- * Also, I believe there is more grammar data than I've listed here, though how 
+ * Also, I believe there is more grammar data than I've listed here, though how
  * much is for the parser proper and how much for the helper I don't know -- MTR
  *
  * Journey has no grammar.
@@ -185,16 +185,16 @@ void configure_parse_tables (unsigned int *verb_count,
 			     unsigned long *prep_table_end)
 #else
 void configure_parse_tables (verb_count,
-							 action_count,
-							 parse_count,
-							 parser_type,
-							 prep_type,
-							 verb_table_base,
-							 verb_data_base,
-							 action_table_base,
-							 preact_table_base,
-							 prep_table_base,
-							 prep_table_end)
+			     action_count,
+			     parse_count,
+			     parser_type,
+			     prep_type,
+			     verb_table_base,
+			     verb_data_base,
+			     action_table_base,
+			     preact_table_base,
+			     prep_table_base,
+			     prep_table_end)
 unsigned int *verb_count;
 unsigned int *action_count;
 unsigned int *parse_count;
@@ -315,9 +315,9 @@ unsigned long *prep_table_end;
     *verb_table_base = (unsigned long) header.dynamic_size;
 
     /*
-	 * Calculate the number of verb entries in the table. This can be done
-	 * because the verb entries immediately follow the verb table.
-	 */
+     * Calculate the number of verb entries in the table. This can be done
+     * because the verb entries immediately follow the verb table.
+     */
 
     address = *verb_table_base;
     first_entry = read_data_word (&address);
@@ -327,26 +327,26 @@ unsigned long *prep_table_end;
 	(unsigned int) ((first_entry - *verb_table_base) / sizeof (zword_t));
 
     /*
-	 * Calculate the form of the verb parse table entries. Basically,
-	 * Infocom used two types of table. The first types have 8 bytes per
-	 * entry, and the second type has a variable sized amount of data per
-	 * entry. In addition, Inform uses two new types of table. We look at
-	 * the serial number to distinguish Inform story files from Infocom
-	 * games, and we look at the last header entry to identify Inform 6
-	 * story files because Inform 6 writes its version number into the
-	 * last four bytes of this entry.
-	 */
+     * Calculate the form of the verb parse table entries. Basically,
+     * Infocom used two types of table. The first types have 8 bytes per
+     * entry, and the second type has a variable sized amount of data per
+     * entry. In addition, Inform uses two new types of table. We look at
+     * the serial number to distinguish Inform story files from Infocom
+     * games, and we look at the last header entry to identify Inform 6
+     * story files because Inform 6 writes its version number into the
+     * last four bytes of this entry.
+     */
 
     /*
-	 * Inform 6.10 addes an additional table format, called GV2.  GV1 is the
-	 * Inform 6.0-6.05 format, and is essentially similar to the Inform 5
-	 * format except that the parsing routine table is not padded out
-	 * to the length of the action table.
-	 * Infocom: parser_type = 0,1
-	 * Inform 1?-5: parser_type = 2
-	 * Inform 6 GV1: parser_type = 3
-	 * Inform 6 GV2: parser_type = 4
-	 */
+     * Inform 6.10 addes an additional table format, called GV2.  GV1 is the
+     * Inform 6.0-6.05 format, and is essentially similar to the Inform 5
+     * format except that the parsing routine table is not padded out
+     * to the length of the action table.
+     * Infocom: parser_type = 0,1
+     * Inform 1?-5: parser_type = 2
+     * Inform 6 GV1: parser_type = 3
+     * Inform 6 GV2: parser_type = 4
+     */
 
     address = *verb_table_base;
     first_entry = read_data_word (&address);
@@ -362,15 +362,15 @@ unsigned long *prep_table_end;
     }
 
     /* Distinguishing between GV1 and GV2 isn't trivial.
-	   Here I check the length of the first entry.	It will be 1 mod 3
-	   for GV2 and 1 mod 8 for GV1. If it's 1 mod 24, first I check to see if
-	   its length matches the GV1 length.  Then I check for illegal GV1 values. 
-	   If they aren't found, I assume GV1.  I believe it is actually possible for
-	   a legal (if somewhat nonsensical) GV1 table to be the same as a legal GV2
-	   table, but I haven't actually constructed such a weird table.  In practice,
-	   the ENDIT (15) byte of the GV2 table will probably cause an illegal token
-	   if the table is interpreted as GV1 -- MTR.
-	*/
+     * Here I check the length of the first entry.	It will be 1 mod 3
+     * for GV2 and 1 mod 8 for GV1. If it's 1 mod 24, first I check to see if
+     * its length matches the GV1 length.  Then I check for illegal GV1 values.
+     * If they aren't found, I assume GV1.  I believe it is actually possible for
+     * a legal (if somewhat nonsensical) GV1 table to be the same as a legal GV2
+     * table, but I haven't actually constructed such a weird table.  In practice,
+     * the ENDIT (15) byte of the GV2 table will probably cause an illegal token
+     * if the table is interpreted as GV1 -- MTR.
+     */
 
     if (*parser_type == inform_gv1) {
 	first_entry = *verb_data_base;
@@ -405,13 +405,13 @@ unsigned long *prep_table_end;
     }
 
     /*
-	 * Make a pass through the verb parse table looking at the pre-action and
-	 * action routine indices. We need to know what the highest index is to
-	 * find the size of the pre-action and action tables. Before Inform 6
-	 * both tables had the same size. For Inform 6 story files we also need
-	 * to know the number of parsing routines that occupy the pre-action
-	 * table (instead of pre-actions).
-	 */
+     * Make a pass through the verb parse table looking at the pre-action and
+     * action routine indices. We need to know what the highest index is to
+     * find the size of the pre-action and action tables. Before Inform 6
+     * both tables had the same size. For Inform 6 story files we also need
+     * to know the number of parsing routines that occupy the pre-action
+     * table (instead of pre-actions).
+     */
 
     *action_count = 0;
     *parse_count = 0;
@@ -464,9 +464,9 @@ unsigned long *prep_table_end;
 	;
 
     /*
-	 * Set the start addresses of the pre-action and action routines tables
-	 * and the preposition table.
-	 */
+     * Set the start addresses of the pre-action and action routines tables
+     * and the preposition table.
+     */
 
     *action_table_base = verb_entry - 1;
     *preact_table_base =
@@ -485,9 +485,9 @@ unsigned long *prep_table_end;
 		*preact_table_base + (*parse_count * sizeof (zword_t));
 
 	/*
-			 * Set the preposition table type by looking to see if the byte index
-			 * is stored in a word (an hence the upper 8 bits are zero).
-			 */
+	 * Set the preposition table type by looking to see if the byte index
+	 * is stored in a word (an hence the upper 8 bits are zero).
+	 */
 
 	address = *prep_table_base;
 	prep_count = (unsigned int) read_data_word (&address);
@@ -608,11 +608,11 @@ static void show_verb_parse_table (unsigned long verb_table_base,
 				   unsigned long attr_names_base)
 #else
 static void show_verb_parse_table (verb_table_base,
-								   verb_count,
-								   parser_type,
-								   prep_type,
-								   prep_table_base,
-								   attr_names_base)
+				   verb_count,
+				   parser_type,
+				   prep_type,
+				   prep_table_base,
+				   attr_names_base)
 unsigned long verb_table_base;
 unsigned int verb_count;
 unsigned int parser_type;
@@ -787,13 +787,13 @@ void show_syntax_of_action (int action,
 			    unsigned long prep_table_base,
 			    unsigned long attr_names_base)
 #else
-void show_syntax_of_action( 	action,
-								verb_table_base,
-								verb_count,
-								parser_type,
-								prep_type,
-								prep_table_base,
-								attr_names_base)
+void show_syntax_of_action(action,
+			   verb_table_base,
+			   verb_count,
+			   parser_type,
+			   prep_type,
+			   prep_table_base,
+			   attr_names_base)
 int action;
 unsigned long verb_table_base;
 unsigned int verb_count;
@@ -1040,8 +1040,8 @@ int is_gv2_parsing_routine (unsigned long parsing_routine,
 			    unsigned int verb_count)
 #else
 int is_gv2_parsing_routine(parsing_routine,
-									verb_table_base,
-									verb_count)
+			   verb_table_base,
+			   verb_count)
 unsigned long parsing_routine;
 unsigned long verb_table_base;
 unsigned int verb_count;
@@ -1098,12 +1098,12 @@ void show_syntax_of_parsing_routine (unsigned long parsing_routine,
 				     unsigned long attr_names_base)
 #else
 void show_syntax_of_parsing_routine(parsing_routine,
-									verb_table_base,
-									verb_count,
-									parser_type,
-									prep_type,
-									prep_table_base,
-									attr_names_base)
+				    verb_table_base,
+				    verb_count,
+				    parser_type,
+				    prep_type,
+				    prep_table_base,
+				    attr_names_base)
 unsigned long parsing_routine;
 unsigned long verb_table_base;
 unsigned int verb_count;
@@ -1196,16 +1196,16 @@ static void show_action_tables (unsigned long verb_table_base,
 				unsigned long action_names_base)
 #else
 static void show_action_tables (verb_table_base,
-								verb_count,
-								action_count,
-								parse_count,
-								parser_type,
-								prep_type,
-								action_table_base,
-								preact_table_base,
-								prep_table_base,
-								attr_names_base,
-								action_names_base)
+				verb_count,
+				action_count,
+				parse_count,
+				parser_type,
+				prep_type,
+				action_table_base,
+				preact_table_base,
+				prep_table_base,
+				attr_names_base,
+				action_names_base)
 unsigned long verb_table_base;
 unsigned int verb_count;
 unsigned int action_count;
@@ -1263,9 +1263,9 @@ unsigned long action_names_base;
 	}
 
 	/*
-		 * Now scan down the parse table looking for all verb/sentence formats
-		 * that cause this action routine to be called.
-		 */
+	 * Now scan down the parse table looking for all verb/sentence formats
+	 * that cause this action routine to be called.
+	 */
 	show_syntax_of_action (action,
 			       verb_table_base,
 			       verb_count,
@@ -1279,8 +1279,10 @@ unsigned long action_names_base;
 
     if ((parser_type >= inform5_grammar) && (parser_type < inform_gv2)) {
 
-	/* Determine number of parsing routines (ie. the number of
-		   non-zero entries in the former pre-actions table) */
+	/*
+	 * Determine number of parsing routines (ie. the number of
+	 * non-zero entries in the former pre-actions table)
+	 */
 
 	tx_printf ("\n    **** Parsing routines ****\n\n");
 	tx_printf ("  Number of parsing routines = %d\n\n", (int) parse_count);
@@ -1299,9 +1301,9 @@ unsigned long action_names_base;
 	    tx_printf (" ");
 	    tx_fix_margin (1);
 	    /*
-			 * Now scan down the parse table looking for all verb/sentence formats
-			 * that this parsing routine applies to.
-			 */
+	     * Now scan down the parse table looking for all verb/sentence formats
+	     * that this parsing routine applies to.
+	     */
 
 	    show_syntax_of_parsing_routine ((unsigned long) action,
 					    verb_table_base,
@@ -1329,8 +1331,8 @@ static void show_preposition_table (unsigned int prep_type,
 				    unsigned int parser_type)
 #else
 static void show_preposition_table (prep_type,
-									prep_table_base,
-									parser_type)
+				    prep_table_base,
+				    parser_type)
 unsigned int prep_type;
 unsigned long prep_table_base;
 unsigned int parser_type;
@@ -1461,12 +1463,12 @@ void show_verb_grammar (unsigned long verb_entry,
 			unsigned long attr_names_base)
 #else
 void show_verb_grammar (verb_entry,
-						verb_index,
-						parser_type,
-						v6_number_objects,
-						prep_type,
-						prep_table_base,
-						attr_names_base)
+			verb_index,
+			parser_type,
+			v6_number_objects,
+			prep_type,
+			prep_table_base,
+			attr_names_base)
 unsigned long verb_entry;
 unsigned int verb_index;
 int parser_type;
@@ -1514,7 +1516,9 @@ unsigned long prep_table_base;
 		    tx_printf (" ");
 		}
 #if 0
-				tx_printf("$%04x", token_type);  /* turn this on if you want to see the attribute and flag? info for the object */
+		/* turn this on if you want to see the attribute and flag? info
+		   for the object */
+		tx_printf("$%04x", token_type);
 #else
 		tx_printf ("OBJ");
 #endif

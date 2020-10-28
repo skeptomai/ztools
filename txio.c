@@ -299,7 +299,8 @@ void load_cache ()
     /* Allocate cache pages and initialise them */
 
     for (i = data_pages;
-	 cachep != NULL && i < file_pages && i < data_pages + MAX_CACHE; i++) {
+	 cachep != NULL && i < file_pages && i < data_pages + MAX_CACHE;
+	 i++) {
 	cachep = (cache_entry_t *) malloc (sizeof (cache_entry_t));
 	if (cachep != NULL) {
 	    cachep->flink = cache;
@@ -531,24 +532,24 @@ unsigned long *address;
 			    }
 
 			    /*
-                         * Shift keys: 2, 3, 4 or 5
-                         *
-                         * Shift keys 2 & 3 only shift the next character and can be used regardless of
-                         * the state of the shift lock. Shift keys 4 & 5 lock the shift until reset.
-                         *
-                         * The following code implements the the shift code state transitions:
-			 *
-                         *               +-------------+-------------+-------------+-------------+
-                         *               |       Shift   State       |        Lock   State       |
-                         * +-------------+-------------+-------------+-------------+-------------+
-                         * | Code        |      2      |       3     |      4      |      5      |
-                         * +-------------+-------------+-------------+-------------+-------------+
-                         * | lowercase   | uppercase   | punctuation | uppercase   | punctuation |
-                         * | uppercase   | punctuation | lowercase   | punctuation | lowercase   |
-                         * | punctuation | lowercase   | uppercase   | lowercase   | uppercase   |
-                         * +-------------+-------------+-------------+-------------+-------------+
-			 *
-                         */
+                             * Shift keys: 2, 3, 4 or 5
+                             *
+                             * Shift keys 2 & 3 only shift the next character and can be used regardless of
+                             * the state of the shift lock. Shift keys 4 & 5 lock the shift until reset.
+                             *
+                             * The following code implements the the shift code state transitions:
+                             *
+                             *               +-------------+-------------+-------------+-------------+
+                             *               |       Shift   State       |        Lock   State       |
+                             * +-------------+-------------+-------------+-------------+-------------+
+                             * | Code        |      2      |       3     |      4      |      5      |
+                             * +-------------+-------------+-------------+-------------+-------------+
+                             * | lowercase   | uppercase   | punctuation | uppercase   | punctuation |
+                             * | uppercase   | punctuation | lowercase   | punctuation | lowercase   |
+                             * | punctuation | lowercase   | uppercase   | lowercase   | uppercase   |
+                             * +-------------+-------------+-------------+-------------+-------------+
+                             *
+                             */
 
 			} else {
 			    if (code < 4)
@@ -572,17 +573,25 @@ unsigned long *address;
 
 			    synonym_flag = 1;
 			    synonym = code;
-			    /*
-                         * Shift key: 4 or 5
-                         *
-                         * Selects the shift state for the next character,
-                         * either uppercase (4) or punctuation (5). The shift
-			 * state automatically gets reset back to lowercase for
-                         * V3+ games after the next character is output.
-                         *
-                         */
-
 			} else {
+			    /*
+                             * Shift key: 4 or 5
+                             *
+                             * Selects the shift state for the next character,
+                             * either uppercase (4) or punctuation (5). The shift
+                             * state automatically gets reset back to lowercase for
+                             * V3+ games after the next character is output.
+                             *
+                             * Note: this is known to be incorrect historically.
+                             * In fact, a shift of 5 from uppercase should return
+                             * to lowercase, as does a shift of 4 from punctuation.
+                             * A shift of 4 from uppercase or a shift of 5 from symbol
+                             * should be  shift-lock for uppercase and symbols
+                             * respectively.  This is neither implemented here nor
+                             * known to have been used in any Infocom game, and is
+                             * specifically rejected by the Z-Machine Standard 1.1.
+                             */
+
 			    shift_state = code - 3;
 			    shift_lock = 0;
 			}

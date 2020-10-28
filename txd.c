@@ -1481,8 +1481,8 @@ int opers;
 
     case ACTION:
 	if (decode.first_pass == 0) {
-	    show_verb_of_action (
-		value, verb_table_base, verb_count, parser_type);
+	    show_verb_of_action (value, verb_table_base, verb_count,
+				 parser_type);
 	}
 	break;
 

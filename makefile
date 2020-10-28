@@ -2,6 +2,8 @@
 
 CC = cc
 NROFF	= nroff
+CLANG-FORMAT = clang-format
+PYTHON3 = python3
 
 #Some systems declare getopt, others do not.  Pick whichever works
 #CFLAGS = -O -DHAS_GETOPT
@@ -17,6 +19,10 @@ LIBS =
 
 MANPAGES = infodump.1 inforead.1 txd.1 check.1 pix2gif.1
 FORMATTEDMAN = $(MANPAGES:.1=.man)
+
+SRCS = check.c getopt.c infinfo.c infodump.c inforead.c pix2gif.c showdict.c \
+	showhead.c showobj.c showverb.c symbols.c txd.c txio.c
+HDRS = infinfo.h pix2gif.h symbols.h tx.h
 
 CINC =
 COBJS = check.o
@@ -56,3 +62,11 @@ clean :
 	-rm *.o check infodump pix2gif txd $(FORMATTEDMAN)
 
 doc: $(FORMATTEDMAN)
+
+.PHONY: checkformat
+
+checkformat:
+	for i in $(SRCS) $(HDRS) ; do \
+	  $(CLANG-FORMAT) $$($(PYTHON3) get_format_range.py < $$i) \
+	      --style=file -n "$$i" ; \
+	done
