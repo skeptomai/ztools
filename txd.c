@@ -151,9 +151,13 @@ static unsigned int parse_count = 0;
 static unsigned int parser_type = 0;
 static unsigned int prep_type = 0;
 static unsigned long verb_table_base = 0;
+static unsigned long verb_table_end = 0;
 static unsigned long verb_data_base = 0;
+static unsigned long verb_data_end = 0;
 static unsigned long action_table_base = 0;
+static unsigned long action_table_end = 0;
 static unsigned long preact_table_base = 0;
+static unsigned long preact_table_end = 0;
 static unsigned long prep_table_base = 0;
 static unsigned long prep_table_end = 0;
 
@@ -293,8 +297,9 @@ const char *file_name;
     if (option_grammar)
 	configure_parse_tables (
 	    &verb_count, &action_count, &parse_count, &parser_type, &prep_type,
-	    &verb_table_base, &verb_data_base, &action_table_base,
-	    &preact_table_base, &prep_table_base, &prep_table_end);
+	    &verb_table_base, &verb_table_end, &verb_data_base, &verb_data_end,
+	    &action_table_base, &action_table_end, &preact_table_base,
+	    &preact_table_end, &prep_table_base, &prep_table_end);
 
     if (option_symbols && (parser_type >= inform_gv1)) {
 	configure_object_tables (&obj_count, &obj_table_base, &obj_table_end,

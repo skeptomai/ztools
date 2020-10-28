@@ -9,6 +9,21 @@
 #include "symbols.h"
 
 #ifdef __STDC__
+void configure_zapf_parse_tables (unsigned int *verb_count,
+				  unsigned int *action_count,
+				  unsigned int *parse_count,
+				  unsigned int *parser_type,
+				  unsigned int *prep_type,
+				  unsigned long *verb_table_base,
+				  unsigned long *verb_table_end,
+				  unsigned long *verb_data_base,
+				  unsigned long *verb_data_end,
+				  unsigned long *action_table_base,
+				  unsigned long *action_table_end,
+				  unsigned long *preact_table_base,
+				  unsigned long *preact_table_end,
+				  unsigned long *prep_table_base,
+				  unsigned long *prep_table_end);
 static void show_verb_parse_table (unsigned long, unsigned int, unsigned int,
 				   unsigned int, unsigned long, unsigned long);
 static void show_action_tables (unsigned long, unsigned int, unsigned int,
@@ -178,9 +193,13 @@ void configure_parse_tables (unsigned int *verb_count,
 			     unsigned int *parser_type,
 			     unsigned int *prep_type,
 			     unsigned long *verb_table_base,
+			     unsigned long *verb_table_end,
 			     unsigned long *verb_data_base,
+			     unsigned long *verb_data_end,
 			     unsigned long *action_table_base,
+			     unsigned long *action_table_end,
 			     unsigned long *preact_table_base,
+			     unsigned long *preact_table_end,
 			     unsigned long *prep_table_base,
 			     unsigned long *prep_table_end)
 #else
@@ -190,9 +209,13 @@ void configure_parse_tables (verb_count,
 			     parser_type,
 			     prep_type,
 			     verb_table_base,
+			     verb_table_end,
 			     verb_data_base,
+			     verb_data_end,
 			     action_table_base,
+			     action_table_end,
 			     preact_table_base,
+			     preact_table_end,
 			     prep_table_base,
 			     prep_table_end)
 unsigned int *verb_count;
@@ -201,9 +224,13 @@ unsigned int *parse_count;
 unsigned int *parser_type;
 unsigned int *prep_type;
 unsigned long *verb_table_base;
+unsigned long *verb_table_end;
 unsigned long *verb_data_base;
+unsigned long *verb_data_end;
 unsigned long *action_table_base;
+unsigned long *action_table_end;
 unsigned long *preact_table_base;
+unsigned long *preact_table_end;
 unsigned long *prep_table_base;
 unsigned long *prep_table_end;
 #endif
@@ -224,6 +251,24 @@ unsigned long *prep_table_end;
     *parser_type = 0;
     *prep_type = 0;
 
+    if (!memcmp (&header.name[4], "ZAPF", 4)) {
+	configure_zapf_parse_tables (verb_count,
+				     action_count,
+				     parse_count,
+				     parser_type,
+				     prep_type,
+				     verb_table_base,
+				     verb_table_end,
+				     verb_data_base,
+				     verb_data_end,
+				     action_table_base,
+				     action_table_end,
+				     preact_table_base,
+				     preact_table_end,
+				     prep_table_base,
+				     prep_table_end);
+	return;
+    }
     if (header.serial[0] >= '0' && header.serial[0] <= '9' &&
 	header.serial[1] >= '0' && header.serial[1] <= '9' &&
 	header.serial[2] >= '0' && header.serial[2] <= '1' &&
@@ -302,11 +347,15 @@ unsigned long *prep_table_end;
 	    return;
 	*verb_count = (vend - vbase) / 8;
 	*verb_table_base = vbase;
+	*verb_table_end = area2base;
 	*verb_data_base = area2base;
 	/* there is no preposition table, but *prep_table_base bounds the verb data area */
+	*verb_data_end = area2end;
 	*prep_table_base = area2end;
 	*prep_table_end = area2end;
 	*action_count = (*preact_table_base - *action_table_base) / 2;
+	*action_table_end = *preact_table_base - 1;
+	*preact_table_end = *preact_table_base + *action_count * 2;
 	return;
     }
 
@@ -352,6 +401,7 @@ unsigned long *prep_table_end;
     first_entry = read_data_word (&address);
     second_entry = read_data_word (&address);
     *verb_data_base = first_entry;
+    *verb_table_end = first_entry - 1;
     entry_count = (unsigned int) read_data_byte (&first_entry);
 
     if (*parser_type < inform5_grammar) {
@@ -469,11 +519,14 @@ unsigned long *prep_table_end;
      */
 
     *action_table_base = verb_entry - 1;
+    *verb_data_end = *action_table_base - 1;
     *preact_table_base =
 	*action_table_base + (*action_count * sizeof (zword_t));
+    *action_table_end = *preact_table_base - 1;
 
     if (*parser_type >= inform_gv2) {
 	/* GV2 has neither preaction/parse table nor preposition table */
+	*preact_table_end = *preact_table_base;
 	*prep_table_base = *preact_table_base;
 	*prep_table_end = *preact_table_base;
     } else {
@@ -483,6 +536,7 @@ unsigned long *prep_table_end;
 	else
 	    *prep_table_base =
 		*preact_table_base + (*parse_count * sizeof (zword_t));
+	*preact_table_end = *prep_table_base - 1;
 
 	/*
 	 * Set the preposition table type by looking to see if the byte index
@@ -503,6 +557,159 @@ unsigned long *prep_table_end;
 
 } /* configure_parse_tables */
 
+/**
+ * configure_zapf_parse_tables
+ *
+ * This configures parse tables for Jesse McGrew's Zilf. We guess the compiler
+ * based on the ZAPF header written by the assembler.
+ */
+#ifdef __STDC__
+void configure_zapf_parse_tables (unsigned int *verb_count,
+				  unsigned int *action_count,
+				  unsigned int *parse_count,
+				  unsigned int *parser_type,
+				  unsigned int *prep_type,
+				  unsigned long *verb_table_base,
+				  unsigned long *verb_table_end,
+				  unsigned long *verb_data_base,
+				  unsigned long *verb_data_end,
+				  unsigned long *action_table_base,
+				  unsigned long *action_table_end,
+				  unsigned long *preact_table_base,
+				  unsigned long *preact_table_end,
+				  unsigned long *prep_table_base,
+				  unsigned long *prep_table_end)
+#else
+#error /* TODO -- write the K&R definition or remove K&R completely */
+#endif
+{
+    /*
+     * For Zilf "old grammar", the preposition table is first, followed by the
+     * verb table.  Then the action table, then the pre-action table, then the
+     * verb data.  Verb and preposition count can be found though the
+     * dictionary; we can then find the tables (between IMPURE and ENDLOD --
+     * that is header.dynamic_size and header.resident_size)
+     */
+    unsigned long address, word_address;
+    int word_size;
+    int word_text_size;
+    int word_count;
+    unsigned long first_word;
+    unsigned long last_word;
+    int dict_verb_count = 0;
+    int dict_prep_count = 0;
+
+    *verb_table_base = 0;
+    *verb_table_end = 0;
+    *verb_data_base = 0;
+    *action_table_base = 0;
+    *action_table_end = 0;
+    *preact_table_base = 0;
+    *preact_table_end = 0;
+    *prep_table_base = 0;
+    *prep_table_end = 0;
+    *verb_count = 0;
+    *action_count = 0;
+    /* ZILF non-compact grammar uses infocom_fixed.  It is yet to be determined if compact
+       grammar uses infocom_variable */
+    *parser_type = infocom_fixed;
+    /* ZILF old grammar appears to always use prep_type 0; that is, the preposition
+       count is stored in a word, wasting a byte */
+    *prep_type = 0;
+    *parse_count = 0;
+
+    /* Calculate dictionary bounds and entry size */
+    /* TODO: make a subroutine for this in showdict.c */
+
+    address = (unsigned long) header.dictionary;
+    word_text_size = header.version < V4 ? 4 : 6;
+    address += (unsigned long) read_data_byte (&address); /* skip separators */
+    word_size = read_data_byte (&address);
+    word_count = read_data_word (&address);
+    first_word = address;
+    last_word = address + ((word_count - 1) * word_size);
+    for (word_address = first_word; word_address <= last_word;
+	 word_address += word_size) {
+	int flags;
+	int d1, d2;
+	address = word_address + word_text_size;
+	flags = read_data_byte (&address);
+	d1 = read_data_byte (&address);
+	d2 = read_data_byte (&address);
+	if (flags & VERB) {
+	    int verb_num = (flags & DATA_FIRST) == VERB_FIRST ? d1 : d2;
+	    verb_num ^= 0xFF;
+	    if (dict_verb_count < verb_num)
+		dict_verb_count = verb_num;
+	}
+	if (flags & PREP) {
+	    int prep_num = (flags & DATA_FIRST) == PREP_FIRST ? d1 : d2;
+	    prep_num ^= 0xFF;
+	    if (dict_prep_count < prep_num)
+		dict_prep_count = prep_num;
+	}
+    }
+    dict_verb_count++;
+    dict_prep_count++;
+    address = header.dynamic_size;
+    while (!*prep_table_base && address < header.resident_size) {
+	int length_hi = read_data_byte (&address);
+	int i;
+	unsigned long prep_address = address;
+	if (length_hi == 0 &&
+	    read_data_byte (&prep_address) == dict_prep_count) {
+	    for (i = 0; i < dict_prep_count; i++) {
+		unsigned long word_address = read_data_word (&prep_address);
+		/* The prep_num here is the inverted (255-based) number */
+		int prep_num = read_data_word (&prep_address);
+		int flags;
+		/* Check if we've found a dictionary word */
+		if (word_address < first_word || word_address > last_word ||
+		    ((word_address - first_word) % word_size != 0))
+		    break;
+
+		/* Check if that word is a preposition, and if so, the right
+		   preposition */
+		word_address += word_text_size;
+		flags = read_data_byte (&word_address);
+		if (!(flags & PREP))
+		    break;
+		if ((flags & DATA_FIRST) != PREP_FIRST)
+		    word_address++;
+		if (prep_num != read_data_byte (&word_address))
+		    break;
+	    }
+
+	    if (i == dict_prep_count) {
+		*prep_table_base = address - 1;
+	    }
+	}
+    }
+    /* Can't find the tables, sorry */
+    if (!*prep_table_base)
+	return;
+    *verb_count = dict_verb_count;
+    /* Verb table immediately follows prep table */
+    if (*prep_type == 0) {
+	*verb_table_base = *prep_table_base + 2 + dict_prep_count * 4;
+    } else {
+	*verb_table_base = *prep_table_base + 2 + dict_prep_count * 3;
+    }
+    *prep_table_end = *verb_table_base - 1;
+    /* Verb data base is given by first entry in verb table */
+    address = *verb_table_base;
+    *verb_data_base = read_data_word (&address);
+    /* Actions and pre-actions are sandwiched between verb table and verb data */
+    *action_table_base = *verb_table_base + dict_verb_count * 2;
+    *verb_table_end = *action_table_base - 1;
+    /* Each table entry is 2 bytes and there's two tables, hence the 4 */
+    *action_count = (*verb_data_base - *action_table_base) / 4;
+    *preact_table_base = *action_table_base + *action_count * 2;
+    *preact_table_end = *verb_data_base - 1;
+    *action_table_end = *preact_table_base - 1;
+    *verb_data_end = header.resident_size - 1;
+}
+
 /*
  * show_verbs
  *
@@ -517,8 +724,10 @@ void show_verbs (symbolic)
 int symbolic;
 #endif
 {
-    unsigned long verb_table_base, verb_data_base;
-    unsigned long action_table_base, preact_table_base;
+    unsigned long verb_table_base, verb_table_end;
+    unsigned long verb_data_base, verb_data_end;
+    unsigned long action_table_base, action_table_end;
+    unsigned long preact_table_base, preact_table_end;
     unsigned long prep_table_base, prep_table_end;
     unsigned int verb_count, action_count, parse_count, parser_type, prep_type;
 
@@ -534,8 +743,9 @@ int symbolic;
 
     configure_parse_tables (
 	&verb_count, &action_count, &parse_count, &parser_type, &prep_type,
-	&verb_table_base, &verb_data_base, &action_table_base,
-	&preact_table_base, &prep_table_base, &prep_table_end);
+	&verb_table_base, &verb_table_end, &verb_data_base, &verb_data_end,
+	&action_table_base, &action_table_end, &preact_table_base,
+	&preact_table_end, &prep_table_base, &prep_table_end);
 
     /* I wonder weather you can guess which author required the following test? */
 
@@ -1348,7 +1558,7 @@ unsigned int parser_type;
     count = (unsigned int) read_data_word (&address);
 
     tx_printf ("\n    **** Prepositions ****\n\n");
-    tx_printf ("  Table entries = %d\n\n", (int) count);
+    tx_printf ("  Table entries = %d\n\n", (int) count, prep_type);
 
     /* Iterate through all prepositions */
 

@@ -433,7 +433,8 @@ void tx_set_width ();
 void configure_parse_tables (unsigned int *, unsigned int *, unsigned int *,
 			     unsigned int *, unsigned int *, unsigned long *,
 			     unsigned long *, unsigned long *, unsigned long *,
-			     unsigned long *, unsigned long *);
+			     unsigned long *, unsigned long *, unsigned long *,
+			     unsigned long *, unsigned long *, unsigned long *);
 void show_verb_grammar (unsigned long, unsigned int, int, int, int,
 			unsigned long, unsigned long);
 void show_syntax_of_action (int action,

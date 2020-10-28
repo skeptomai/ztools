@@ -401,8 +401,10 @@ static void show_map ()
     unsigned long obj_table_base, obj_table_end, obj_data_base, obj_data_end;
     unsigned int verb_count, action_count, verb_type, prep_type;
     unsigned int parse_count;
-    unsigned long verb_table_base, verb_data_base;
-    unsigned long action_table_base, preact_table_base;
+    unsigned long verb_table_base, verb_table_end;
+    unsigned long verb_data_base, verb_data_end;
+    unsigned long action_table_base, action_table_end;
+    unsigned long preact_table_base, preact_table_end;
     unsigned long prep_table_base, prep_table_end;
     unsigned int ext_table_size;
     unsigned long ext_table_base, ext_table_end;
@@ -458,17 +460,18 @@ static void show_map ()
 
     configure_parse_tables (
 	&verb_count, &action_count, &parse_count, &verb_type, &prep_type,
-	&verb_table_base, &verb_data_base, &action_table_base,
-	&preact_table_base, &prep_table_base, &prep_table_end);
+	&verb_table_base, &verb_table_end, &verb_data_base, &verb_data_end,
+	&action_table_base, &action_table_end, &preact_table_base,
+	&preact_table_end, &prep_table_base, &prep_table_end);
 
     if ((verb_count > 0) && (verb_type != infocom6_grammar)) {
-	set_area (area, verb_table_base, verb_data_base - 1,
+	set_area (area, verb_table_base, verb_table_end,
 		  "Grammar pointer table");
-	set_area (area, verb_data_base, action_table_base - 1, "Grammar data");
-	set_area (area, action_table_base, preact_table_base - 1,
+	set_area (area, verb_data_base, verb_data_end, "Grammar data");
+	set_area (area, action_table_base, action_table_end,
 		  "Action routine table");
 	if (verb_type < inform_gv2) {
-	    set_area (area, preact_table_base, prep_table_base - 1,
+	    set_area (area, preact_table_base, preact_table_end,
 		      (verb_type >= inform5_grammar)
 			  ? "Parsing routine table"
 			  : "Pre-action routine table");

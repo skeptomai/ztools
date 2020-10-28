@@ -44,13 +44,13 @@ int columns;
 
     configure_dictionary (&word_count, &word_table_base, &word_table_end);
 
-    if (header.serial[0] >= '0' && header.serial[0] <= '9' &&
-	header.serial[1] >= '0' && header.serial[1] <= '9' &&
-	header.serial[2] >= '0' && header.serial[2] <= '1' &&
-	header.serial[3] >= '0' && header.serial[3] <= '9' &&
-	header.serial[4] >= '0' && header.serial[4] <= '3' &&
-	header.serial[5] >= '0' && header.serial[5] <= '9' &&
-	header.serial[0] != '8') {
+    if (memcmp (&header.name[4], "ZAPF", 4) && header.serial[0] >= '0' &&
+	header.serial[0] <= '9' && header.serial[1] >= '0' &&
+	header.serial[1] <= '9' && header.serial[2] >= '0' &&
+	header.serial[2] <= '1' && header.serial[3] >= '0' &&
+	header.serial[3] <= '9' && header.serial[4] >= '0' &&
+	header.serial[4] <= '3' && header.serial[5] >= '0' &&
+	header.serial[5] <= '9' && header.serial[0] != '8') {
 	inform_flags = TRUE;
     }
 
