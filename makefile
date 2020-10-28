@@ -63,7 +63,19 @@ clean :
 
 doc: $(FORMATTEDMAN)
 
-.PHONY: checkformat
+.SUFFIXES: .c .h .c_f .h_f
+FORMATS = $(SRCS:.c=.c_f) $(HDRS:.h=.h_f)
+
+.PHONY: checkformat format
+
+format: $(FORMATS)
+	rm *.c_f *.h_f
+
+.h.h_f .c.c_f:
+	$(CLANG-FORMAT) $$($(PYTHON3) get_format_range.py < $<) \
+		--style=file -i "$<"
+	touch "$@"
+
 
 checkformat:
 	for i in $(SRCS) $(HDRS) ; do \
