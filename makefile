@@ -7,7 +7,7 @@ PYTHON3 = python3
 
 #Some systems declare getopt, others do not.  Pick whichever works
 #CFLAGS = -O -DHAS_GETOPT
-CFLAGS = -O --std=c89 -Wall -Wextra -Werror
+CFLAGS = -DHAS_VSNPRINTF -g --std=c89 -Wall -Wextra -Werror
 LDFLAGS =
 LIBS =
 

@@ -707,7 +707,11 @@ void tx_printf (va_alist) va_dcl
 	    }
 	}
 	/* On some systems vsprintf does not return the text length */
+#ifdef HAS_VSNPRINTF
+	(void) vsnprintf (buffer, sizeof (buffer), format, ap);
+#else
 	(void) vsprintf (buffer, format, ap);
+#endif
 	count = strlen (buffer);
 	if (count > TX_SCREEN_COLS) {
 	    (void) fprintf (stderr, "\nFatal: buffer space overflow\n");
