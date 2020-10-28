@@ -50,8 +50,7 @@
 
 int read_track (int drive, int track, unsigned char *tp);
 
-int main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]) {
     int track = 6;
     int drive = 0;
     FILE *fp;
@@ -73,8 +72,11 @@ int main (int argc, char *argv[])
 	exit (1);
     }
     if (argc < 2) {
-	fprintf (stderr, "usage: %s story-file-name [start track [drive]]\n\n", argv[0]);
-	fprintf (stderr, "INFOREAD version 6/8 - convert Infocom boot disks to files. By Mark Howell\n");
+	fprintf (stderr, "usage: %s story-file-name [start track [drive]]\n\n",
+		 argv[0]);
+	fprintf (
+	    stderr,
+	    "INFOREAD version 6/8 - convert Infocom boot disks to files. By Mark Howell\n");
 	fprintf (stderr, "Works with V3 Infocom games.\n");
 	exit (1);
     }
@@ -90,8 +92,8 @@ int main (int argc, char *argv[])
 
     for (i = track; i < 40; i++) {
 	if (status = read_track (drive, i, tp)) {
-	    fprintf (stderr, "error %d from drive #%d, track #%d\n",
-		     status, drive, track);
+	    fprintf (stderr, "error %d from drive #%d, track #%d\n", status,
+		     drive, track);
 	    exit (1);
 	}
 	if (i == track) {
@@ -133,10 +135,9 @@ int main (int argc, char *argv[])
 
     return (0);
 
-}/* main */
+} /* main */
 
-int read_track (int drive, int track, unsigned char *tp)
-{
+int read_track (int drive, int track, unsigned char *tp) {
     struct diskinfo_t di;
     unsigned int status;
     int i;
@@ -161,4 +162,4 @@ int read_track (int drive, int track, unsigned char *tp)
 
     return (status >> 8);
 
-}/* read_track */
+} /* read_track */

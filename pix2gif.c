@@ -20,41 +20,25 @@
 
 #ifdef __MSDOS__
 #include <alloc.h>
-#define malloc(n) farmalloc(n)
-#define calloc(n,s) farcalloc(n,s)
-#define free(p) farfree(p)
+#define malloc(n) farmalloc (n)
+#define calloc(n, s) farcalloc (n, s)
+#define free(p) farfree (p)
 #endif
 
-static short mask[16] = {
-    0x0000, 0x0001, 0x0003, 0x0007,
-    0x000f, 0x001f, 0x003f, 0x007f,
-    0x00ff, 0x01ff, 0x03ff, 0x07ff,
-    0x0fff, 0x1fff, 0x3fff, 0x7fff
-};
+static short mask[16] = {0x0000, 0x0001, 0x0003, 0x0007, 0x000f, 0x001f,
+			 0x003f, 0x007f, 0x00ff, 0x01ff, 0x03ff, 0x07ff,
+			 0x0fff, 0x1fff, 0x3fff, 0x7fff};
 
 static unsigned char ega_colourmap[16][3] = {
-	{   0,  0,  0 },
-	{   0,  0,170 },
-	{   0,170,  0 },
-	{   0,170,170 },
-	{ 170,  0,  0 },
-	{ 170,  0,170 },
-	{ 170,170,  0 },
-	{ 170,170,170 },
-	{  85, 85, 85 },
-	{  85, 85,255 },
-	{  85,255, 85 },
-	{  85,255,255 },
-	{ 255, 85, 85 },
-	{ 255, 85,255 },
-	{ 255,255, 85 },
-	{ 255,255,255 }
-};
+    {0, 0, 0},     {0, 0, 170},    {0, 170, 0},    {0, 170, 170},
+    {170, 0, 0},   {170, 0, 170},  {170, 170, 0},  {170, 170, 170},
+    {85, 85, 85},  {85, 85, 255},  {85, 255, 85},  {85, 255, 255},
+    {255, 85, 85}, {255, 85, 255}, {255, 255, 85}, {255, 255, 255}};
 
 #if defined(AMIGA) && defined(_DCC)
 __far
 #endif
-static nlist_t *hash_table[HASH_SIZE];
+    static nlist_t *hash_table[HASH_SIZE];
 static unsigned char colourmap[16][3];
 static unsigned char code_buffer[CODE_TABLE_SIZE];
 static char file_name[FILENAME_MAX + 1];
@@ -118,7 +102,9 @@ char *argv[];
 
     if (argc != 2) {
 	(void) fprintf (stderr, "usage: %s picture-file\n\n", argv[0]);
-	(void) fprintf (stderr, "PIX2GIF version 7/2 - convert Infocom MG1/EG1 files to GIF. By Mark Howell\n");
+	(void) fprintf (
+	    stderr,
+	    "PIX2GIF version 7/2 - convert Infocom MG1/EG1 files to GIF. By Mark Howell\n");
 	(void) fprintf (stderr, "Works with V6 Infocom games.\n");
 	exit (EXIT_FAILURE);
     }
@@ -141,7 +127,8 @@ char *argv[];
 
     (void) printf ("Total number of images is %d.\n", (int) header.images);
 
-    if ((directory = (pdirectory_t *) calloc ((size_t) header.images, sizeof (pdirectory_t))) == NULL) {
+    if ((directory = (pdirectory_t *) calloc ((size_t) header.images,
+					      sizeof (pdirectory_t))) == NULL) {
 	(void) fprintf (stderr, "Insufficient memory\n");
 	exit (EXIT_FAILURE);
     }
@@ -172,7 +159,7 @@ char *argv[];
 
     return (0);
 
-}/* main */
+} /* main */
 
 #if defined(__STDC__)
 static void process_image (FILE *fp, pdirectory_t *directory)
@@ -212,9 +199,8 @@ pdirectory_t *directory;
     }
 
     (void) printf ("pic %03d   size %3d x %3d   %2d colours   colour map ",
-	    (int) directory->image_number,
-	    (int) directory->image_width, (int) directory->image_height,
-	    (int) colours);
+		   (int) directory->image_number, (int) directory->image_width,
+		   (int) directory->image_height, (int) colours);
 
     if (directory->image_cm_addr != 0)
 	(void) printf ("$%05lx", (long) directory->image_cm_addr);
@@ -225,8 +211,7 @@ pdirectory_t *directory;
 	image.transflag = 1;
 	image.transpixel = (unsigned short) directory->image_flags >> 12;
 	(void) printf ("   transparent is %u\n", image.transpixel);
-    }
-    else {
+    } else {
 	image.transpixel = 0;
 	image.transflag = 0;
 	(void) printf ("\n");
@@ -239,7 +224,9 @@ pdirectory_t *directory;
     image.height = directory->image_height;
     image.colours = colours;
     image.pixels = 0;
-    if ((image.image = (unsigned char *) calloc ((size_t) directory->image_width, (size_t) directory->image_height)) == NULL) {
+    if ((image.image = (unsigned char *) calloc (
+	     (size_t) directory->image_width,
+	     (size_t) directory->image_height)) == NULL) {
 	(void) fprintf (stderr, "Insufficient memory\n");
 	exit (EXIT_FAILURE);
     }
@@ -255,7 +242,7 @@ pdirectory_t *directory;
 
     free (image.image);
 
-}/* process image */
+} /* process image */
 
 #if defined(__STDC__)
 static void decompress_image (FILE *fp, image_t *image)
@@ -291,21 +278,21 @@ image_t *image;
 	} else {
 	    first = (code == comp.next_code) ? old : code;
 	    while (code_table[first][PREFIX] != CODE_TABLE_SIZE)
-                first = code_table[first][PREFIX];
-            code_table[comp.next_code][PREFIX] = old;
-            code_table[comp.next_code++][PIXEL] = code_table[first][PIXEL];
-        }
-        old = code;
-        i = 0;
-        do
-            buffer[i++] = (unsigned char) code_table[code][PIXEL];
-        while ((code = code_table[code][PREFIX]) != CODE_TABLE_SIZE);
-        do 
-            image->image[image->pixels++] = buffer[--i]; 
-        while (i > 0);
+		first = code_table[first][PREFIX];
+	    code_table[comp.next_code][PREFIX] = old;
+	    code_table[comp.next_code++][PIXEL] = code_table[first][PIXEL];
+	}
+	old = code;
+	i = 0;
+	do
+	    buffer[i++] = (unsigned char) code_table[code][PIXEL];
+	while ((code = code_table[code][PREFIX]) != CODE_TABLE_SIZE);
+	do
+	    image->image[image->pixels++] = buffer[--i];
+	while (i > 0);
     }
 
-}/* decompress_image */
+} /* decompress_image */
 
 #if defined(__STDC__)
 static short read_code (FILE *fp, compress_t *comp)
@@ -322,29 +309,32 @@ compress_t *comp;
     tptr = 0;
 
     while (tlen) {
-        if (comp->slen == 0) {
-            if ((comp->slen = fread (code_buffer, 1, MAX_BIT, fp)) == 0) {
-                perror ("fread");
-                exit (EXIT_FAILURE);
-            }
-            comp->slen *= 8;
-            comp->sptr = 0;
-        }
+	if (comp->slen == 0) {
+	    if ((comp->slen = fread (code_buffer, 1, MAX_BIT, fp)) == 0) {
+		perror ("fread");
+		exit (EXIT_FAILURE);
+	    }
+	    comp->slen *= 8;
+	    comp->sptr = 0;
+	}
 	bsize = ((comp->sptr + 8) & ~7) - comp->sptr;
-        bsize = (tlen > bsize) ? bsize : tlen;
-        code |= (((unsigned int) code_buffer[comp->sptr >> 3] >> (comp->sptr & 7)) & mask[bsize]) << tptr;
+	bsize = (tlen > bsize) ? bsize : tlen;
+	code |=
+	    (((unsigned int) code_buffer[comp->sptr >> 3] >> (comp->sptr & 7)) &
+	     mask[bsize])
+	    << tptr;
 
-        tlen -= bsize;
-        tptr += bsize;
-        comp->slen -= bsize;
-        comp->sptr += bsize;
+	tlen -= bsize;
+	tptr += bsize;
+	comp->slen -= bsize;
+	comp->sptr += bsize;
     }
     if ((comp->next_code == mask[comp->tlen]) && (comp->tlen < 12))
-        comp->tlen++;
+	comp->tlen++;
 
     return (code);
 
-}/* read_code */
+} /* read_code */
 
 #if defined(__STDC__)
 static void write_file (int image_number, image_t *image)
@@ -359,21 +349,21 @@ image_t *image;
     (void) sprintf (file_name, "pix%03d.gif", (int) image_number);
 
     if ((fp = fopen (file_name, "wb")) == NULL) {
-        perror ("fopen");
-        exit (EXIT_FAILURE);
+	perror ("fopen");
+	exit (EXIT_FAILURE);
     }
 
     write_bytes (fp, sig_k_bln, (const void *) CURRENT_VERSION);
     write_screen (fp, image);
     if (image->transflag) /* save 8 bytes if possible */
-	write_graphic_control(fp, image);
+	write_graphic_control (fp, image);
     write_image (fp, image);
     compress_image (fp, image);
     write_byte (fp, ';');
 
     (void) fclose (fp);
 
-}/* write_file */
+} /* write_file */
 
 #if defined(__STDC__)
 static void write_screen (FILE *fp, image_t *image)
@@ -386,7 +376,7 @@ image_t *image;
     int i;
 
     for (i = 1; (image->colours - 1) >> i; i++)
-        ;
+	;
 
     write_word (fp, (unsigned short) image->width);
     write_word (fp, (unsigned short) image->height);
@@ -396,7 +386,7 @@ image_t *image;
 
     write_bytes (fp, (1 << i) * 3, (const void *) image->colourmap);
 
-}/* write_screen */
+} /* write_screen */
 
 #if defined(__STDC__)
 static void write_graphic_control (FILE *fp, image_t *image)
@@ -406,17 +396,17 @@ FILE *fp;
 image_t *image;
 #endif
 {
-    write_byte(fp, '!');               /* Extension Introducer        */
-    write_byte(fp, 0xF9);              /* Graphic Control Label       */
-    write_byte(fp, 4);                 /* # bytes in block            */
-    write_byte(fp, image->transflag);   /* bits 7-5: reserved          */
-                                       /* bits 4-2: Disposal Method   */
-                                       /* bit 1   : User Input Flag   */
-                                       /* bit 0   : Transparency Flag */
-    write_byte(fp, 0);                 /* Delay Time LSB              */
-    write_byte(fp, 0);                 /* Delay Time MSB              */
-    write_byte(fp, image->transpixel);  /* Transparent color index     */
-    write_byte(fp, 0);                 /* Block terminator            */
+    write_byte (fp, '!');               /* Extension Introducer        */
+    write_byte (fp, 0xF9);              /* Graphic Control Label       */
+    write_byte (fp, 4);                 /* # bytes in block            */
+    write_byte (fp, image->transflag);  /* bits 7-5: reserved          */
+					/* bits 4-2: Disposal Method   */
+					/* bit 1   : User Input Flag   */
+					/* bit 0   : Transparency Flag */
+    write_byte (fp, 0);                 /* Delay Time LSB              */
+    write_byte (fp, 0);                 /* Delay Time MSB              */
+    write_byte (fp, image->transpixel); /* Transparent color index     */
+    write_byte (fp, 0);                 /* Block terminator            */
 }
 
 #if defined(__STDC__)
@@ -435,7 +425,7 @@ image_t *image;
     write_word (fp, (unsigned short) image->height);
     write_byte (fp, 0);
 
-}/* write_image */
+} /* write_image */
 
 #if defined(__STDC__)
 static void compress_image (FILE *fp, image_t *image)
@@ -452,8 +442,9 @@ image_t *image;
 
     clear_table ();
 
-    for (init_comp_size = 1; (image->colours - 1) >> init_comp_size; init_comp_size++)
-        ;
+    for (init_comp_size = 1; (image->colours - 1) >> init_comp_size;
+	 init_comp_size++)
+	;
 
     clear_code = 1 << init_comp_size++;
     code_buffer[0] = 255;
@@ -469,32 +460,32 @@ image_t *image;
     write_code (fp, clear_code, &comp);
     prefix = image->image[index++];
     while (index < image->pixels) {
-        pixel = image->image[index++];
-        code = lookup (prefix, pixel);
-        if (code) {
-            prefix = code;
-        } else {
-            write_code (fp, prefix, &comp);
-            if (comp.next_code == 4096) {
-                delete_table ();
-                comp.next_code = clear_code + 2;
-                write_code (fp, clear_code, &comp);
-                comp.slen = init_comp_size;
-            } else
-                insert_code (prefix, pixel, comp.next_code++);
-            prefix = pixel;
-        }
+	pixel = image->image[index++];
+	code = lookup (prefix, pixel);
+	if (code) {
+	    prefix = code;
+	} else {
+	    write_code (fp, prefix, &comp);
+	    if (comp.next_code == 4096) {
+		delete_table ();
+		comp.next_code = clear_code + 2;
+		write_code (fp, clear_code, &comp);
+		comp.slen = init_comp_size;
+	    } else
+		insert_code (prefix, pixel, comp.next_code++);
+	    prefix = pixel;
+	}
     }
     write_code (fp, prefix, &comp);
     write_code (fp, (short) (clear_code + 1), &comp);
     if (comp.tptr) {
-        code_buffer[0] = (unsigned char) ((comp.tptr + 7) >> 3);
-        write_bytes (fp, (int) code_buffer[0] + 1, (const void *) code_buffer);
+	code_buffer[0] = (unsigned char) ((comp.tptr + 7) >> 3);
+	write_bytes (fp, (int) code_buffer[0] + 1, (const void *) code_buffer);
     }
     write_byte (fp, 0);
     delete_table ();
 
-}/* compress_image */
+} /* compress_image */
 
 #if defined(__STDC__)
 static void write_code (FILE *fp, short code, compress_t *comp)
@@ -511,26 +502,31 @@ compress_t *comp;
     sptr = 0;
 
     while (slen) {
-        if (comp->tlen == 0) {
-            write_bytes (fp, 256, (const void *) code_buffer);
-            comp->tlen = 255 * 8;
-            comp->tptr = 8;
-        }
-        bsize = ((comp->tptr + 8) & ~7) - comp->tptr;
-        bsize = (slen > bsize) ? bsize : slen;
+	if (comp->tlen == 0) {
+	    write_bytes (fp, 256, (const void *) code_buffer);
+	    comp->tlen = 255 * 8;
+	    comp->tptr = 8;
+	}
+	bsize = ((comp->tptr + 8) & ~7) - comp->tptr;
+	bsize = (slen > bsize) ? bsize : slen;
 
-        code_buffer[comp->tptr >> 3] = (unsigned char) ((unsigned int) code_buffer[comp->tptr >> 3] & mask[comp->tptr & 7]);
-        code_buffer[comp->tptr >> 3] = (unsigned char) ((unsigned int) code_buffer[comp->tptr >> 3] | ((code >> sptr) & mask[bsize]) << (comp->tptr & 7));
+	code_buffer[comp->tptr >> 3] =
+	    (unsigned char) ((unsigned int) code_buffer[comp->tptr >> 3] &
+			     mask[comp->tptr & 7]);
+	code_buffer[comp->tptr >> 3] =
+	    (unsigned char) ((unsigned int) code_buffer[comp->tptr >> 3] |
+			     ((code >> sptr) & mask[bsize])
+				 << (comp->tptr & 7));
 
-        slen -= bsize;
-        sptr += bsize;
-        comp->tlen -= bsize;
-        comp->tptr += bsize;
+	slen -= bsize;
+	sptr += bsize;
+	comp->tlen -= bsize;
+	comp->tptr += bsize;
     }
     if ((comp->next_code == (mask[comp->slen] + 1)) && (comp->slen < 12))
-        comp->slen++;
+	comp->slen++;
 
-}/* write_code */
+} /* write_code */
 
 #if defined(__STDC__)
 static void insert_code (short prefix, short pixel, short code)
@@ -545,8 +541,8 @@ short code;
     nlist_t *np;
 
     if ((np = (nlist_t *) malloc (sizeof (*np))) == NULL) {
-        (void) fprintf (stderr, "Insufficient memory\n");
-        exit (EXIT_FAILURE);
+	(void) fprintf (stderr, "Insufficient memory\n");
+	exit (EXIT_FAILURE);
     }
     hashval = (short) hashfunc (prefix, pixel);
     np->next = (nlist_t *) hash_table[hashval];
@@ -555,7 +551,7 @@ short code;
     np->pixel = pixel;
     np->code = code;
 
-}/* insert_code */
+} /* insert_code */
 
 #if defined(__STDC__)
 static short lookup (short prefix, short pixel)
@@ -570,12 +566,12 @@ short pixel;
 
     hashval = (short) hashfunc (prefix, pixel);
     for (np = hash_table[hashval]; np != NULL; np = (nlist_t *) np->next)
-        if ((np->prefix == prefix) && (np->pixel == pixel))
-            return (np->code);
+	if ((np->prefix == prefix) && (np->pixel == pixel))
+	    return (np->code);
 
     return (0);
 
-}/* lookup */
+} /* lookup */
 
 #if defined(__STDC__)
 static void clear_table (void)
@@ -586,9 +582,9 @@ static void clear_table ()
     int i;
 
     for (i = 0; i < HASH_SIZE; i++)
-        hash_table[i] = NULL;
+	hash_table[i] = NULL;
 
-}/* clear_table */
+} /* clear_table */
 
 #if defined(__STDC__)
 static void delete_table (void)
@@ -600,14 +596,14 @@ static void delete_table ()
     nlist_t *np, *tp;
 
     for (i = 0; i < HASH_SIZE; i++) {
-        for (np = hash_table[i]; np != NULL; np = tp) {
-            tp = (nlist_t *) np->next;
-            free (np);
-        }
-        hash_table[i] = NULL;
+	for (np = hash_table[i]; np != NULL; np = tp) {
+	    tp = (nlist_t *) np->next;
+	    free (np);
+	}
+	hash_table[i] = NULL;
     }
 
-}/* delete_table */
+} /* delete_table */
 
 #if defined(__STDC__)
 static unsigned char read_byte (FILE *fp)
@@ -619,13 +615,13 @@ FILE *fp;
     int c;
 
     if ((c = fgetc (fp)) == EOF) {
-        perror ("fgetc");
-        exit (EXIT_FAILURE);
+	perror ("fgetc");
+	exit (EXIT_FAILURE);
     }
 
     return ((unsigned char) c);
 
-}/* read_byte */
+} /* read_byte */
 
 #if defined(__STDC__)
 static void write_byte (FILE *fp, int c)
@@ -637,11 +633,11 @@ int c;
 {
 
     if (fputc (c, fp) == EOF) {
-        perror ("fputc");
-        exit (EXIT_FAILURE);
+	perror ("fputc");
+	exit (EXIT_FAILURE);
     }
 
-}/* write_byte */
+} /* write_byte */
 
 #if defined(__STDC__)
 static unsigned short read_word (FILE *fp)
@@ -657,7 +653,7 @@ FILE *fp;
 
     return (w);
 
-}/* read_word */
+} /* read_word */
 
 #if defined(__STDC__)
 static void write_word (FILE *fp, unsigned short w)
@@ -671,7 +667,7 @@ unsigned short w;
     write_byte (fp, (int) w & 255);
     write_byte (fp, (int) w >> 8);
 
-}/* write_word */
+} /* write_word */
 
 #if defined(__STDC__)
 static void read_bytes (FILE *fp, int size, void *s)
@@ -684,11 +680,11 @@ void *s;
 {
 
     if (fread (s, (size_t) size, 1, fp) != 1) {
-        perror ("fread");
-        exit (EXIT_FAILURE);
+	perror ("fread");
+	exit (EXIT_FAILURE);
     }
 
-}/* read_bytes */
+} /* read_bytes */
 
 #if defined(__STDC__)
 static void write_bytes (FILE *fp, int size, const void *s)
@@ -701,8 +697,8 @@ const void *s;
 {
 
     if (fwrite (s, (size_t) size, 1, fp) != 1) {
-        perror ("fwrite");
-        exit (EXIT_FAILURE);
+	perror ("fwrite");
+	exit (EXIT_FAILURE);
     }
 
-}/* write_bytes */
+} /* write_bytes */

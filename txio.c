@@ -12,7 +12,6 @@
 #include <Signal.h>
 #endif
 
-
 zheader_t header;
 
 int story_scaler;
@@ -28,37 +27,29 @@ int option_inform = 0;
 
 unsigned long file_size = 0;
 
-static const char *v1_lookup_table[3] = {
-    "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    " 0123456789.,!?_#'\"/\\<-:()"
-};
+static const char *v1_lookup_table[3] = {"abcdefghijklmnopqrstuvwxyz",
+					 "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+					 " 0123456789.,!?_#'\"/\\<-:()"};
 
-static const char *v3_lookup_table[3] = {
-    "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    " \n0123456789.,!?_#'\"/\\-:()"
-};
+static const char *v3_lookup_table[3] = {"abcdefghijklmnopqrstuvwxyz",
+					 "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+					 " \n0123456789.,!?_#'\"/\\-:()"};
 
 static const char *euro_substitute[69] = {
-    "ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", ">>", "<<", "e",
-    "i",  "y",  "E",  "I",  "a",  "e",  "i",  "o",  "u",  "y",
-    "A",  "E",  "I",  "O",  "U",  "Y",  "a",  "e",  "i",  "o",
-    "u",  "A",  "E",  "I",  "O",  "U",  "a",  "e",  "i",  "o",
-    "u",  "A",  "E",  "I",  "O",  "U",  "a",  "A",  "o",  "O",
-    "a",  "n",  "o",  "A",  "N",  "O",  "ae", "AE", "c",  "C",
-    "th", "th", "Th", "Th", "L",  "oe", "OE", "!",  "?"
-};
+    "ae", "oe", "ue", "Ae", "Oe", "Ue", "ss", ">>", "<<", "e",  "i", "y",
+    "E",  "I",  "a",  "e",  "i",  "o",  "u",  "y",  "A",  "E",  "I", "O",
+    "U",  "Y",  "a",  "e",  "i",  "o",  "u",  "A",  "E",  "I",  "O", "U",
+    "a",  "e",  "i",  "o",  "u",  "A",  "E",  "I",  "O",  "U",  "a", "A",
+    "o",  "O",  "a",  "n",  "o",  "A",  "N",  "O",  "ae", "AE", "c", "C",
+    "th", "th", "Th", "Th", "L",  "oe", "OE", "!",  "?"};
 
 static const char *inform_euro_substitute[69] = {
-    "ae", "oe", "ue", "AE", "OE", "UE", "ss", ">>", "<<", ":e",
-    ":i",  ":y",  ":E",  ":I",  "'a",  "'e",  "'i",  "'o",  "'u",  "'y",
-    "'A",  "'E",  "'I",  "'O",  "'U",  "'Y",  "`a",  "`e",  "`i",  "`o",
-    "`u",  "`A",  "`E",  "`I",  "`O",  "`U",  "^a",  "^e",  "^i",  "^o",
-    "^u",  "^A",  "^E",  "^I",  "^O",  "^U",  "oa",  "oA",  "\\o",  "\\O",
-    "~a",  "~n",  "~o",  "~A",  "~N",  "~O",  "ae", "AE", "cc",  "cC",
-    "th", "et", "Th", "Et", "LL",  "oe", "OE", "!!",  "??"
-};
+    "ae",  "oe",  "ue", "AE", "OE", "UE", "ss", ">>", "<<", ":e", ":i", ":y",
+    ":E",  ":I",  "'a", "'e", "'i", "'o", "'u", "'y", "'A", "'E", "'I", "'O",
+    "'U",  "'Y",  "`a", "`e", "`i", "`o", "`u", "`A", "`E", "`I", "`O", "`U",
+    "^a",  "^e",  "^i", "^o", "^u", "^A", "^E", "^I", "^O", "^U", "oa", "oA",
+    "\\o", "\\O", "~a", "~n", "~o", "~A", "~N", "~O", "ae", "AE", "cc", "cC",
+    "th",  "et",  "Th", "Et", "LL", "oe", "OE", "!!", "??"};
 
 static int lookup_table_loaded = 0;
 static char lookup_table[3][26];
@@ -128,7 +119,7 @@ int max_version;
     header.globals = get_word (H_GLOBALS);
     header.dynamic_size = get_word (H_DYNAMIC_SIZE);
     header.flags = get_word (H_FLAGS);
-    for (i = 0; i < (int)sizeof (header.serial); i++)
+    for (i = 0; i < (int) sizeof (header.serial); i++)
 	header.serial[i] = get_byte (H_SERIAL + i);
     header.abbreviations = get_word (H_ABBREVIATIONS);
     header.file_size = get_word (H_FILE_SIZE);
@@ -156,7 +147,7 @@ int max_version;
     header.specification_lo = get_byte (H_SPECIFICATION_LO);
     header.alphabet = get_word (H_ALPHABET);
     header.mouse_table = get_word (H_MOUSE_TABLE);
-    for (i = 0; i < (int)sizeof (header.name); i++)
+    for (i = 0; i < (int) sizeof (header.name); i++)
 	header.name[i] = get_byte (H_NAME + i);
 
     if ((unsigned int) header.version < (unsigned int) min_version ||
@@ -207,7 +198,7 @@ int max_version;
     else
 	file_size = (unsigned long) header.file_size * 8;
 
-}/* configure */
+} /* configure */
 
 #ifdef __STDC__
 void open_story (const char *storyname)
@@ -223,7 +214,7 @@ const char *storyname;
 	exit (EXIT_FAILURE);
     }
 
-}/* open_story */
+} /* open_story */
 
 #ifdef __STDC__
 void close_story (void)
@@ -235,7 +226,7 @@ void close_story ()
     if (gfp != NULL)
 	(void) fclose (gfp);
 
-}/* close_story */
+} /* close_story */
 
 #ifdef __STDC__
 void read_page (unsigned int page, void *buffer)
@@ -257,13 +248,14 @@ zbyte_t *buffer;
     fseek (gfp, (long) page * PAGE_SIZE, SEEK_SET);
     if (fread (buffer, bytes_to_read, 1, gfp) != 1) {
 	(void) fprintf (stderr, "\nFatal: game file read error\n");
-	(void) fprintf (stderr, "Failed to read %d bytes at %lx\n", bytes_to_read, (long) page * PAGE_SIZE);
-        if (tx_screen_cols != 0)
-            tx_write_char('\n');
+	(void) fprintf (stderr, "Failed to read %d bytes at %lx\n",
+			bytes_to_read, (long) page * PAGE_SIZE);
+	if (tx_screen_cols != 0)
+	    tx_write_char ('\n');
 	exit (EXIT_FAILURE);
     }
 
-}/* read_page */
+} /* read_page */
 
 #ifdef __STDC__
 void load_cache (void)
@@ -288,7 +280,8 @@ void load_cache ()
 
     /* Calculate dynamic cache pages required */
 
-    data_pages = ((unsigned int) header.resident_size + PAGE_MASK) >> PAGE_SHIFT;
+    data_pages =
+	((unsigned int) header.resident_size + PAGE_MASK) >> PAGE_SHIFT;
     data_size = data_pages * PAGE_SIZE;
     file_size = (unsigned long) header.file_size * story_scaler;
     file_pages = (unsigned int) ((file_size + PAGE_MASK) >> PAGE_SHIFT);
@@ -305,17 +298,18 @@ void load_cache ()
 
     /* Allocate cache pages and initialise them */
 
-    for (i = data_pages; cachep != NULL && i < file_pages && i < data_pages + MAX_CACHE; i++) {
+    for (i = data_pages;
+	 cachep != NULL && i < file_pages && i < data_pages + MAX_CACHE; i++) {
 	cachep = (cache_entry_t *) malloc (sizeof (cache_entry_t));
 	if (cachep != NULL) {
 	    cachep->flink = cache;
 	    cachep->page_number = i;
 	    read_page (cachep->page_number, cachep->data);
 	    cache = cachep;
-        }
+	}
     }
 
-}/* load_cache */
+} /* load_cache */
 
 #ifdef __STDC__
 zword_t read_data_word (unsigned long *addr)
@@ -331,7 +325,7 @@ unsigned long *addr;
 
     return (w);
 
-}/* read_data_word */
+} /* read_data_word */
 
 #ifdef __STDC__
 zbyte_t read_data_byte (unsigned long *addr)
@@ -344,21 +338,21 @@ unsigned long *addr;
     zbyte_t value;
 
     if (*addr < (unsigned long) data_size)
-        value = datap[*addr];
+	value = datap[*addr];
     else {
-        page_number = (int) (*addr >> PAGE_SHIFT);
-        page_offset = (int) *addr & PAGE_MASK;
-        if (page_number != current_data_page) {
-            current_data_cachep = update_cache (page_number);
-        current_data_page = page_number;
+	page_number = (int) (*addr >> PAGE_SHIFT);
+	page_offset = (int) *addr & PAGE_MASK;
+	if (page_number != current_data_page) {
+	    current_data_cachep = update_cache (page_number);
+	    current_data_page = page_number;
 	}
-        value = current_data_cachep->data[page_offset];
+	value = current_data_cachep->data[page_offset];
     }
     (*addr)++;
 
     return (value);
 
-}/* read_data_byte */
+} /* read_data_byte */
 
 #ifdef __STDC__
 int decode_text (unsigned long *address)
@@ -376,21 +370,22 @@ unsigned long *address;
      */
 
     if (lookup_table_loaded == 0) {
-        for (i = 0; i < 3; i++) {
-            for (j = 0; j < 26; j++) {
-                if ((unsigned int) header.alphabet) {
-		    lookup_table[i][j] = (char) get_byte ((unsigned int) header.alphabet + (i * 26) + j);
-                } else {
+	for (i = 0; i < 3; i++) {
+	    for (j = 0; j < 26; j++) {
+		if ((unsigned int) header.alphabet) {
+		    lookup_table[i][j] = (char) get_byte (
+			(unsigned int) header.alphabet + (i * 26) + j);
+		} else {
 		    if ((unsigned int) header.version == V1)
-                        lookup_table[i][j] = v1_lookup_table[i][j];
-                    else
-                        lookup_table[i][j] = v3_lookup_table[i][j];
-                }   
-                if (option_inform && lookup_table[i][j] == '\"')
-                    lookup_table[i][j] = '~';
-            }
-        }
-        lookup_table_loaded = 1;
+			lookup_table[i][j] = v1_lookup_table[i][j];
+		    else
+			lookup_table[i][j] = v3_lookup_table[i][j];
+		}
+		if (option_inform && lookup_table[i][j] == '\"')
+		    lookup_table[i][j] = '~';
+	    }
+	}
+	lookup_table_loaded = 1;
     }
 
     /* Set state variables */
@@ -403,137 +398,139 @@ unsigned long *address;
 
     do {
 
-        /*
+	/*
          * Read one 16 bit word. Each word contains three 5 bit codes. If the
          * high bit is set then this is the last word in the string.
          */
-        data = read_data_word (address);
+	data = read_data_word (address);
 
-        for (i = 10; i >= 0; i -= 5) {
+	for (i = 10; i >= 0; i -= 5) {
 
-            /* Get code, high bits first */
+	    /* Get code, high bits first */
 
-            code = (data >> i) & 0x1f;
+	    code = (data >> i) & 0x1f;
 
-            /* Synonym codes */
+	    /* Synonym codes */
 
-            if (synonym_flag) {
+	    if (synonym_flag) {
 
-                synonym_flag = 0;
+		synonym_flag = 0;
 		synonym = (synonym - 1) * 64;
-                addr = (unsigned long) get_word ((unsigned int) header.abbreviations + synonym + (code * 2)) * 2;
-                char_count += decode_text (&addr);
-                shift_state = shift_lock;
+		addr = (unsigned long) get_word (
+			   (unsigned int) header.abbreviations + synonym +
+			   (code * 2)) *
+		       2;
+		char_count += decode_text (&addr);
+		shift_state = shift_lock;
 
-            /* ASCII codes */
+		/* ASCII codes */
 
-            } else if (ascii_flag) {
+	    } else if (ascii_flag) {
 
-                /*
+		/*
 		 * If this is the first part ASCII code then remember it.
                  * Because the codes are only 5 bits you need two codes to make
                  * one eight bit ASCII character. The first code contains the
                  * top 3 bits. The second code contains the bottom 5 bits.
                  */
 
-                if (ascii_flag++ == 1)
+		if (ascii_flag++ == 1)
 
-                    ascii = code << 5;
+		    ascii = code << 5;
 
 		/*
                  * If this is the second part ASCII code then assemble the
                  * character from the two codes and output it.
                  */
 
-                else {
+		else {
 
-                    ascii_flag = 0;
-                    tx_printf ("%c", (char) (ascii | code));
-                    char_count++;
+		    ascii_flag = 0;
+		    tx_printf ("%c", (char) (ascii | code));
+		    char_count++;
+		}
 
-                }
+		/* Character codes */
 
-            /* Character codes */
+	    } else if (code > 5) {
 
-            } else if (code > 5) {
+		code -= 6;
 
-                code -= 6;
-
-                /*
+		/*
 		 * If this is character 0 in the punctuation set then the next two
                  * codes make an ASCII character.
                  */
 
-                if (shift_state == 2 && code == 0)
+		if (shift_state == 2 && code == 0)
 
-                    ascii_flag = 1;
+		    ascii_flag = 1;
 
-                /*
+		/*
                  * If this is character 1 in the punctuation set then this
 		 * is a new line.
                  */
 
-		else if (shift_state == 2 && code == 1 && (unsigned int) header.version > V1)
+		else if (shift_state == 2 && code == 1 &&
+			 (unsigned int) header.version > V1)
 
-                    tx_printf ("%c", (option_inform) ? '^' : '\n');
+		    tx_printf ("%c", (option_inform) ? '^' : '\n');
 
-                /*
+		/*
                  * This is a normal character so select it from the character
                  * table appropriate for the current shift state.
 		 */
 
-                else {
+		else {
 
-                    tx_printf ("%c", (char) lookup_table[shift_state][code]);
-                    char_count++;
+		    tx_printf ("%c", (char) lookup_table[shift_state][code]);
+		    char_count++;
+		}
 
-                }
+		shift_state = shift_lock;
 
-                shift_state = shift_lock;
+		/* Special codes 0 to 5 */
 
-            /* Special codes 0 to 5 */
+	    } else {
 
-            } else {
-
-                /*
+		/*
                  * Space: 0
                  *
                  * Output a space character.
                  *
 		 */
 
-                if (code == 0) {
+		if (code == 0) {
 
-                    tx_printf (" ");
-                    char_count++;
+		    tx_printf (" ");
+		    char_count++;
 
-                } else {
+		} else {
 
-                    /*
+		    /*
 		     * The use of the synonym and shift codes is the only difference between
                      * the different versions.
                      */
 
 		    if ((unsigned int) header.version < V3) {
 
-                        /*
+			/*
                          * Newline or synonym: 1
                          *
                          * Output a newline character or set synonym flag.
 			 *
                          */
 
-                        if (code == 1) {
+			if (code == 1) {
 
-                            if ((unsigned int) header.version == V1) {
-                                tx_printf ("%c", (option_inform) ? '^' : '\n');
-                                char_count++;
-                            } else {
-                                synonym_flag = 1;
+			    if ((unsigned int) header.version == V1) {
+				tx_printf ("%c", (option_inform) ? '^' : '\n');
+				char_count++;
+			    } else {
+				synonym_flag = 1;
 				synonym = code;
-                            }
+			    }
 
-                        /*
+			    /*
                          * Shift keys: 2, 3, 4 or 5
                          *
                          * Shift keys 2 & 3 only shift the next character and can be used regardless of
@@ -553,16 +550,17 @@ unsigned long *address;
 			 *
                          */
 
-                        } else {
-                            if (code < 4)
-                                shift_state = (shift_lock + code + 2) % 3;
-                            else
-                                shift_lock = shift_state = (shift_lock + code) % 3;
-                        }
+			} else {
+			    if (code < 4)
+				shift_state = (shift_lock + code + 2) % 3;
+			    else
+				shift_lock = shift_state =
+				    (shift_lock + code) % 3;
+			}
 
 		    } else {
 
-                        /*
+			/*
                          * Synonym table: 1, 2 or 3
                          *
                          * Selects which of three synonym tables the synonym
@@ -572,9 +570,9 @@ unsigned long *address;
 
 			if (code < 4) {
 
-                            synonym_flag = 1;
-                            synonym = code;
-                        /*
+			    synonym_flag = 1;
+			    synonym = code;
+			    /*
                          * Shift key: 4 or 5
                          *
                          * Selects the shift state for the next character,
@@ -584,20 +582,19 @@ unsigned long *address;
                          *
                          */
 
-                        } else {
-                            shift_state = code - 3;
-                            shift_lock = 0;
-
+			} else {
+			    shift_state = code - 3;
+			    shift_lock = 0;
 			}
-                    }
-                }
-            }
-        }
+		    }
+		}
+	    }
+	}
     } while ((data & 0x8000) == 0);
 
     return (char_count);
 
-}/* decode_text */
+} /* decode_text */
 
 #ifdef __STDC__
 static cache_entry_t *update_cache (unsigned int page_number)
@@ -609,28 +606,27 @@ unsigned int page_number;
     cache_entry_t *cachep, *lastp;
 
     for (lastp = cache, cachep = cache;
-         cachep->flink != NULL &&
-         cachep->page_number &&
-         cachep->page_number != page_number;
-         lastp = cachep, cachep = cachep->flink)
-        ;
+	 cachep->flink != NULL && cachep->page_number &&
+	 cachep->page_number != page_number;
+	 lastp = cachep, cachep = cachep->flink)
+	;
     if (cachep->page_number != page_number) {
-        if (cachep->flink == NULL && cachep->page_number) {
-            if (current_data_page == (unsigned int) cachep->page_number)
-                current_data_page = 0;
+	if (cachep->flink == NULL && cachep->page_number) {
+	    if (current_data_page == (unsigned int) cachep->page_number)
+		current_data_page = 0;
 	}
-        cachep->page_number = page_number;
-        read_page (page_number, cachep->data);
+	cachep->page_number = page_number;
+	read_page (page_number, cachep->data);
     }
     if (lastp != cache) {
-        lastp->flink = cachep->flink;
-        cachep->flink = cache;
-        cache = cachep;
+	lastp->flink = cachep->flink;
+	cachep->flink = cache;
+	cache = cachep;
     }
 
     return (cachep);
 
-}/* update_cache */
+} /* update_cache */
 
 /*
  * get_story_size
@@ -657,14 +653,13 @@ static unsigned long get_story_size ()
 
     return (file_length);
 
-}/* get_story_size */
+} /* get_story_size */
 
 /*VARARGS*/
 #ifdef __STDC__
 void tx_printf (const char *format, ...)
 #else
-void tx_printf (va_alist)
-va_dcl
+void tx_printf (va_alist) va_dcl
 #endif
 {
     va_list ap;
@@ -685,13 +680,13 @@ va_dcl
 
 #ifdef MAC_MPW
     if (!cursor_initialized) {
-    	InitCursorCtl((acurHandle)NULL);
-	Show_Cursor(WATCH_CURSOR);
+	InitCursorCtl ((acurHandle) NULL);
+	Show_Cursor (WATCH_CURSOR);
 	cursor_initialized = 1;
-	signal(SIGINT, SIG_DFL);
+	signal (SIGINT, SIG_DFL);
     }
-    if (strchr(format, '\n'))
-    	SpinCursor(1);
+    if (strchr (format, '\n'))
+	SpinCursor (1);
 #endif
 
     if (tx_screen_cols != 0) {
@@ -716,10 +711,10 @@ va_dcl
 
     va_end (ap);
 
-}/* tx_printf */
+} /* tx_printf */
 
 #ifdef __STDC__
-static void write_high_zscii(int c)
+static void write_high_zscii (int c)
 #else
 static void write_high_zscii(c)
 int c;
@@ -729,27 +724,27 @@ int c;
     static int unicode_table_loaded;
     int unicode_table_addr;
     int length, i;
-    
+
     if (!unicode_table_loaded) {
-    	if (header.mouse_table && (get_word(header.mouse_table) > 2)) {
-	    unicode_table_addr = get_word(header.mouse_table + 6);
+	if (header.mouse_table && (get_word (header.mouse_table) > 2)) {
+	    unicode_table_addr = get_word (header.mouse_table + 6);
 	    if (unicode_table_addr) {
-	    	length = get_byte(unicode_table_addr);
-	   	for (i = 0; i < length; i++)
-	    	    unicode_table[i + 155] = get_word(unicode_table_addr + 1 + i*2);
+		length = get_byte (unicode_table_addr);
+		for (i = 0; i < length; i++)
+		    unicode_table[i + 155] =
+			get_word (unicode_table_addr + 1 + i * 2);
 	    }
 	}
 	unicode_table_loaded = 1;
     }
-  
+
     if ((c <= 0xdf) && !unicode_table[c]) {
-    	if (option_inform)
-	    tx_printf("@%s", inform_euro_substitute[c - 0x9b]);
+	if (option_inform)
+	    tx_printf ("@%s", inform_euro_substitute[c - 0x9b]);
 	else
 	    tx_printf (euro_substitute[c - 0x9b]);
-    }
-    else /* no non-inform version of these.  */
-    	tx_printf("@{%x}", unicode_table[c]);
+    } else /* no non-inform version of these.  */
+	tx_printf ("@{%x}", unicode_table[c]);
 }
 
 #ifdef __STDC__
@@ -771,7 +766,7 @@ int c;
     /* European characters should be substituted by their replacements. */
 
     if (c >= 0x9b && c <= 0xfb) {
-	write_high_zscii(c);
+	write_high_zscii (c);
 	return;
     }
 
@@ -790,19 +785,19 @@ int c;
 	    tx_line_pos = 0;
 	    tx_col = 1;
 	    tx_printf ("%s", cp);
-        }
+	}
     }
 
     if (tx_do_margin) {
-        tx_do_margin = 0;
-        for (i = 1; i < tx_margin; i++)
+	tx_do_margin = 0;
+	for (i = 1; i < tx_margin; i++)
 	    tx_write_char (' ');
     }
 
     tx_line[tx_line_pos++] = (char) c;
     tx_col++;
 
-}/* tx_write_char */
+} /* tx_write_char */
 
 #ifdef __STDC__
 void tx_fix_margin (int flag)
@@ -814,7 +809,7 @@ int flag;
 
     tx_margin = (flag) ? tx_col : 0;
 
-}/* tx_fix_margin */
+} /* tx_fix_margin */
 
 #ifdef __STDC__
 void tx_set_width (int width)
@@ -835,6 +830,4 @@ int width;
     }
     tx_screen_cols = width;
 
-}/* tx_set_width */
-
-
+} /* tx_set_width */

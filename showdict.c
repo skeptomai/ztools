@@ -7,11 +7,9 @@
 #include "tx.h"
 
 #ifdef __STDC__
-void configure_dictionary
-    (unsigned int *, unsigned long *, unsigned long *);
-void configure_abbreviations
-    (unsigned int *, unsigned long *, unsigned long *, unsigned long *,
-     unsigned long *);
+void configure_dictionary (unsigned int *, unsigned long *, unsigned long *);
+void configure_abbreviations (unsigned int *, unsigned long *, unsigned long *,
+			      unsigned long *, unsigned long *);
 #else
 void configure_dictionary ();
 void configure_abbreviations ();
@@ -34,27 +32,27 @@ int columns;
     unsigned long dict_address, word_address, word_table_base, word_table_end;
     unsigned int separator_count, word_size, word_count, length;
     int i, flag;
-	int inform_flags = 0;
-	int dictpar1 = 0;
-	
+    int inform_flags = 0;
+    int dictpar1 = 0;
+
     /* Force default column count if none specified */
 
     if (columns == 0)
-        columns = ((unsigned int) header.version < V4) ? 5 : 4;
+	columns = ((unsigned int) header.version < V4) ? 5 : 4;
 
     /* Get dictionary configuration */
 
     configure_dictionary (&word_count, &word_table_base, &word_table_end);
 
-	if (header.serial[0] >= '0' && header.serial[0] <= '9' &&
-		header.serial[1] >= '0' && header.serial[1] <= '9' &&
-		header.serial[2] >= '0' && header.serial[2] <= '1' &&
-		header.serial[3] >= '0' && header.serial[3] <= '9' &&
-		header.serial[4] >= '0' && header.serial[4] <= '3' &&
-		header.serial[5] >= '0' && header.serial[5] <= '9' &&
-		header.serial[0] != '8') {
-		inform_flags = TRUE;
-	}
+    if (header.serial[0] >= '0' && header.serial[0] <= '9' &&
+	header.serial[1] >= '0' && header.serial[1] <= '9' &&
+	header.serial[2] >= '0' && header.serial[2] <= '1' &&
+	header.serial[3] >= '0' && header.serial[3] <= '9' &&
+	header.serial[4] >= '0' && header.serial[4] <= '3' &&
+	header.serial[5] >= '0' && header.serial[5] <= '9' &&
+	header.serial[0] != '8') {
+	inform_flags = TRUE;
+    }
 
     tx_printf ("\n    **** Dictionary ****\n\n");
 
@@ -64,7 +62,7 @@ int columns;
     separator_count = read_data_byte (&dict_address);
     tx_printf ("  Word separators = \"");
     for (; separator_count; separator_count--)
-        tx_printf ("%c", (char) read_data_byte (&dict_address));
+	tx_printf ("%c", (char) read_data_byte (&dict_address));
     tx_printf ("\"\n");
 
     /* Get word size and count */
@@ -72,96 +70,98 @@ int columns;
     word_size = read_data_byte (&dict_address);
     word_count = read_data_word (&dict_address);
 
-    tx_printf ("  Word count = %d, word size = %d\n", (int) word_count, (int) word_size);
+    tx_printf ("  Word count = %d, word size = %d\n", (int) word_count,
+	       (int) word_size);
 
     /* Display each entry in the dictionary */
 
     for (i = 1; (unsigned int) i <= word_count; i++) {
 
-        /* Set column breaks */
+	/* Set column breaks */
 
-        if (columns == 1 || (i % columns) == 1)
-            tx_printf ("\n");
+	if (columns == 1 || (i % columns) == 1)
+	    tx_printf ("\n");
 
-        tx_printf ("[%4d] ", (int) i);
+	tx_printf ("[%4d] ", (int) i);
 
-        /* Calculate address of next entry */
+	/* Calculate address of next entry */
 
-        word_address = dict_address;
-        dict_address += word_size;
+	word_address = dict_address;
+	dict_address += word_size;
 
-		if (columns == 1)
-              tx_printf ("@ $%02x ", (unsigned int) word_address);
+	if (columns == 1)
+	    tx_printf ("@ $%02x ", (unsigned int) word_address);
 
-        /* Display the text for the word */
+	/* Display the text for the word */
 
-        for (length = decode_text (&word_address); length <= word_size; length++)
-            tx_printf (" ");
+	for (length = decode_text (&word_address); length <= word_size;
+	     length++)
+	    tx_printf (" ");
 
-        /* For a single column list also display the data for each entry */
+	/* For a single column list also display the data for each entry */
 
-        if (columns == 1) {
-            tx_printf ("[");
-            for (flag = 0; word_address < dict_address; flag++) {
-                if (flag)
-                    tx_printf (" ");
-				else
-					dictpar1 = get_byte(word_address);
-					
-                tx_printf ("%02x", (unsigned int) read_data_byte (&word_address));
-            }
-            tx_printf ("]");
-			
-			if (inform_flags) {
-				if (dictpar1 & NOUN)
-                   tx_printf (" <noun>");
-				if (dictpar1 & PREP)
-                   tx_printf (" <prep>");
-				if (dictpar1 & PLURAL)
-                   tx_printf (" <plural>");
-				if (dictpar1 & META)
-                   tx_printf (" <meta>");
-				if (dictpar1 & VERB_INFORM)
-                   tx_printf (" <verb>");
-			}
-			else if (header.version != V6) {
-				flag = dictpar1 & DATA_FIRST;
-				switch (flag) {
-					case DIR_FIRST:
-						if (dictpar1 & DIR)
-                		   tx_printf (" <dir>");
-						break;
-					case ADJ_FIRST:
-						if (dictpar1 & DESC)
-                		   tx_printf (" <adj>");
-						break;
-					case VERB_FIRST:
-						if (dictpar1 & VERB)
-                		   tx_printf (" <verb>");
-						break;
-					case PREP_FIRST:
-						if (dictpar1 & PREP)
-                		   tx_printf (" <prep>");
-						break;
-				}
-				if ((dictpar1 & DIR) && (flag != DIR_FIRST))
-				   tx_printf (" <dir>");
-				if ((dictpar1 & DESC) && (flag != ADJ_FIRST))
-				   tx_printf (" <adj>");
-				if ((dictpar1 & VERB) && (flag != VERB_FIRST))
-				   tx_printf (" <verb>");
-				if ((dictpar1 & PREP) && (flag != PREP_FIRST))
-				   tx_printf (" <prep>");
-				if (dictpar1 & NOUN)
-				   tx_printf (" <noun>");
-				if (dictpar1 & SPECIAL)
-				   tx_printf (" <special>");
-			}
-        }
+	if (columns == 1) {
+	    tx_printf ("[");
+	    for (flag = 0; word_address < dict_address; flag++) {
+		if (flag)
+		    tx_printf (" ");
+		else
+		    dictpar1 = get_byte (word_address);
+
+		tx_printf ("%02x",
+			   (unsigned int) read_data_byte (&word_address));
+	    }
+	    tx_printf ("]");
+
+	    if (inform_flags) {
+		if (dictpar1 & NOUN)
+		    tx_printf (" <noun>");
+		if (dictpar1 & PREP)
+		    tx_printf (" <prep>");
+		if (dictpar1 & PLURAL)
+		    tx_printf (" <plural>");
+		if (dictpar1 & META)
+		    tx_printf (" <meta>");
+		if (dictpar1 & VERB_INFORM)
+		    tx_printf (" <verb>");
+	    } else if (header.version != V6) {
+		flag = dictpar1 & DATA_FIRST;
+		switch (flag) {
+		case DIR_FIRST:
+		    if (dictpar1 & DIR)
+			tx_printf (" <dir>");
+		    break;
+		case ADJ_FIRST:
+		    if (dictpar1 & DESC)
+			tx_printf (" <adj>");
+		    break;
+		case VERB_FIRST:
+		    if (dictpar1 & VERB)
+			tx_printf (" <verb>");
+		    break;
+		case PREP_FIRST:
+		    if (dictpar1 & PREP)
+			tx_printf (" <prep>");
+		    break;
+		}
+		if ((dictpar1 & DIR) && (flag != DIR_FIRST))
+		    tx_printf (" <dir>");
+		if ((dictpar1 & DESC) && (flag != ADJ_FIRST))
+		    tx_printf (" <adj>");
+		if ((dictpar1 & VERB) && (flag != VERB_FIRST))
+		    tx_printf (" <verb>");
+		if ((dictpar1 & PREP) && (flag != PREP_FIRST))
+		    tx_printf (" <prep>");
+		if (dictpar1 & NOUN)
+		    tx_printf (" <noun>");
+		if (dictpar1 & SPECIAL)
+		    tx_printf (" <special>");
+	    }
+	}
     }
     tx_printf ("\n");
 
-}/* show_dictionary */
+} /* show_dictionary */
 
 /*
  * configure_dictionary
@@ -189,8 +189,8 @@ int columns;
 
 #ifdef __STDC__
 void configure_dictionary (unsigned int *word_count,
-                           unsigned long *word_table_base,
-                           unsigned long *word_table_end)
+			   unsigned long *word_table_base,
+			   unsigned long *word_table_end)
 #else
 void configure_dictionary (word_count,
                            word_table_base,
@@ -226,7 +226,7 @@ unsigned long *word_table_end;
 
     *word_table_end = (dict_address + (word_size * *word_count)) - 1;
 
-}/* configure_dictionary */
+} /* configure_dictionary */
 
 /*
  * show_abbreviations
@@ -241,7 +241,8 @@ void show_abbreviations ()
 #endif
 {
     unsigned long table_address, abbreviation_address;
-    unsigned long abbr_table_base, abbr_table_end, abbr_data_base, abbr_data_end;
+    unsigned long abbr_table_base, abbr_table_end, abbr_data_base,
+	abbr_data_end;
     unsigned int abbr_count;
     int i;
 
@@ -266,14 +267,15 @@ void show_abbreviations ()
 
 	    /* Get address of abbreviation text from table */
 
-	    abbreviation_address = (unsigned long) read_data_word (&table_address) * 2;
-            tx_printf ("[%2d] \"", (int) i);
+	    abbreviation_address =
+		(unsigned long) read_data_word (&table_address) * 2;
+	    tx_printf ("[%2d] \"", (int) i);
 	    (void) decode_text (&abbreviation_address);
-            tx_printf ("\"\n");
-        }
+	    tx_printf ("\"\n");
+	}
     }
 
-}/* show_abbreviations */
+} /* show_abbreviations */
 
 /*
  * configure_abbreviations
@@ -341,19 +343,19 @@ unsigned long *abbr_data_end;
 
 	table_address = *abbr_table_base;
 	for (i = 0; (unsigned int) i < *abbr_count; i++) {
-            address = (unsigned long) read_data_word (&table_address) * 2;
+	    address = (unsigned long) read_data_word (&table_address) * 2;
 	    if (*abbr_data_base == 0 || address < *abbr_data_base)
 		*abbr_data_base = address;
 	    if (*abbr_data_end == 0 || address > *abbr_data_end)
 		*abbr_data_end = address;
-        }
+	}
 
-        /* Scan last string to get the actual end of the string */
+	/* Scan last string to get the actual end of the string */
 
 	while (((unsigned int) read_data_word (abbr_data_end) & 0x8000) == 0)
-            ;
+	    ;
 
 	(*abbr_data_end)--;
     }
 
-}/* configure_abbreviations */
+} /* configure_abbreviations */

@@ -109,7 +109,7 @@ typedef struct nlist_s {
 #define sig_k_bln 6
 
 struct sigdef {
-    char sig_t_signature[6];            /* gif signature                    */
+    char sig_t_signature[6]; /* gif signature                    */
 };
 
 #define sd_m_pixel 7
@@ -119,16 +119,16 @@ struct sigdef {
 #define sd_k_bln 7
 
 struct sddef {
-    unsigned short sd_w_width;          /* width of screen                  */
-    unsigned short sd_w_height;         /* height of screen                 */
-    struct {                            /* flags                            */
-	unsigned sd_v_pixel : 3;        /* # bits/pixel in image            */
-	unsigned sd_v_zero : 1;         /* reserved                         */
-	unsigned sd_v_cr : 3;           /* # bits of colour resolution      */
-	unsigned sd_v_gcm : 1;          /* global colourmap present         */
+    unsigned short sd_w_width;   /* width of screen                  */
+    unsigned short sd_w_height;  /* height of screen                 */
+    struct {                     /* flags                            */
+	unsigned sd_v_pixel : 3; /* # bits/pixel in image            */
+	unsigned sd_v_zero : 1;  /* reserved                         */
+	unsigned sd_v_cr : 3;    /* # bits of colour resolution      */
+	unsigned sd_v_gcm : 1;   /* global colourmap present         */
     } sd_r_flags;
-    unsigned char sd_b_background;      /* background colour                */
-    unsigned char sd_b_mbz;             /* null terminating byte            */
+    unsigned char sd_b_background; /* background colour                */
+    unsigned char sd_b_mbz;        /* null terminating byte            */
 };
 
 #define id_m_pixel 7
@@ -138,20 +138,20 @@ struct sddef {
 #define id_k_bln 9
 
 struct iddef {
-    unsigned short id_w_left;           /* image left                       */
-    unsigned short id_w_top;            /* image right                      */
-    unsigned short id_w_width;          /* image width                      */
-    unsigned short id_w_height;         /* image height                     */
-    struct {                            /* flags                            */
-	unsigned id_v_pixel : 3;        /* # bits/pixel in image            */
-	unsigned id_v_zero : 3;         /* reserved                         */
-	unsigned id_v_interlace : 1;    /* interlaced image                 */
-	unsigned id_v_lcm : 1;          /* local colourmap present          */
+    unsigned short id_w_left;        /* image left                       */
+    unsigned short id_w_top;         /* image right                      */
+    unsigned short id_w_width;       /* image width                      */
+    unsigned short id_w_height;      /* image height                     */
+    struct {                         /* flags                            */
+	unsigned id_v_pixel : 3;     /* # bits/pixel in image            */
+	unsigned id_v_zero : 3;      /* reserved                         */
+	unsigned id_v_interlace : 1; /* interlaced image                 */
+	unsigned id_v_lcm : 1;       /* local colourmap present          */
     } id_r_flags;
 };
 
 #define ext_k_bln 1
 
 struct extdef {
-    unsigned char ext_b_fcode;          /* function code                    */
+    unsigned char ext_b_fcode; /* function code                    */
 };

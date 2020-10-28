@@ -9,14 +9,10 @@
 #include "symbols.h"
 
 #ifdef __STDC__
-static unsigned int get_object_address
-    (unsigned int);
-static void print_property_list
-    (unsigned long *, unsigned long);
-static void print_object
-    (int, int);
-static void print_object_desc
-    (int);
+static unsigned int get_object_address (unsigned int);
+static void print_property_list (unsigned long *, unsigned long);
+static void print_object (int, int);
+static void print_object_desc (int);
 #else
 static unsigned int get_object_address ();
 static void print_property_list ();
@@ -133,10 +129,10 @@ static void print_object_desc ();
 
 #ifdef __STDC__
 void configure_object_tables (unsigned int *obj_count,
-                              unsigned long *obj_table_base,
-                              unsigned long *obj_table_end,
-                              unsigned long *obj_data_base,
-                              unsigned long *obj_data_end)
+			      unsigned long *obj_table_base,
+			      unsigned long *obj_table_end,
+			      unsigned long *obj_data_base,
+			      unsigned long *obj_data_end)
 #else
 void configure_object_tables (obj_count,
                               obj_table_base,
@@ -167,27 +163,27 @@ unsigned long *obj_data_end;
 
     do {
 
-        /* Count this object and get its address */
+	/* Count this object and get its address */
 
-        (*obj_count)++;
-        object_address = (unsigned long) get_object_address (*obj_count);
+	(*obj_count)++;
+	object_address = (unsigned long) get_object_address (*obj_count);
 
-        /* Check if we have got to the end of the object list */
+	/* Check if we have got to the end of the object list */
 
-        if (*obj_data_base == 0 || object_address < *obj_data_base) {
+	if (*obj_data_base == 0 || object_address < *obj_data_base) {
 
-            /* Calculate the range of property data */
+	    /* Calculate the range of property data */
 
-            if ((unsigned int) header.version < V4)
-                object_address += O3_PROPERTY_OFFSET;
-            else
-                object_address += O4_PROPERTY_OFFSET;
-            address = read_data_word (&object_address);
-            if (*obj_data_base == 0 || address < *obj_data_base)
-                *obj_data_base = address;
-            if (*obj_data_end == 0 || address > *obj_data_end)
-                *obj_data_end = address;
-        }
+	    if ((unsigned int) header.version < V4)
+		object_address += O3_PROPERTY_OFFSET;
+	    else
+		object_address += O4_PROPERTY_OFFSET;
+	    address = read_data_word (&object_address);
+	    if (*obj_data_base == 0 || address < *obj_data_base)
+		*obj_data_base = address;
+	    if (*obj_data_end == 0 || address > *obj_data_end)
+		*obj_data_end = address;
+	}
     } while (object_address < *obj_data_base);
 
     *obj_table_end = object_address - 1;
@@ -195,26 +191,27 @@ unsigned long *obj_data_end;
     /* Skip any description for the last property */
 
     if ((unsigned int) read_data_byte (obj_data_end))
-        while (((unsigned int) read_data_word (obj_data_end) & 0x8000) == 0)
-            ;
+	while (((unsigned int) read_data_word (obj_data_end) & 0x8000) == 0)
+	    ;
 
     /* Skip any properties to calculate the end address of the last property */
 
     while ((data = read_data_byte (obj_data_end)) != 0) {
-        if ((unsigned int) header.version < V4)
-            data_count = ((data & property_size_mask) >> 5) + 1;
-        else if (data & 0x80)
-            data_count = (unsigned int) read_data_byte (obj_data_end) & property_size_mask;
-        else if (data & 0x40)
-            data_count = 2;
-        else
-            data_count = 1;
-        *obj_data_end += data_count;
+	if ((unsigned int) header.version < V4)
+	    data_count = ((data & property_size_mask) >> 5) + 1;
+	else if (data & 0x80)
+	    data_count = (unsigned int) read_data_byte (obj_data_end) &
+			 property_size_mask;
+	else if (data & 0x40)
+	    data_count = 2;
+	else
+	    data_count = 1;
+	*obj_data_end += data_count;
     }
 
     (*obj_data_end)--;
 
-}/* configure_object_tables */
+} /* configure_object_tables */
 
 /*
  * show_objects
@@ -241,13 +238,14 @@ int symbolic;
     /* Get objects configuration */
 
     configure_object_tables (&obj_count, &obj_table_base, &obj_table_end,
-                             &obj_data_base, &obj_data_end);
+			     &obj_data_base, &obj_data_end);
 
     if (symbolic) {
-    	configure_inform_tables(obj_data_end, &inform_version, &class_numbers_base, &class_numbers_end,
-    				    &property_names_base, &property_names_end, &attr_names_base, &attr_names_end);
-    }
-    else {
+	configure_inform_tables (obj_data_end, &inform_version,
+				 &class_numbers_base, &class_numbers_end,
+				 &property_names_base, &property_names_end,
+				 &attr_names_base, &attr_names_end);
+    } else {
 	attr_names_base = property_names_base = class_numbers_base = 0;
     }
 
@@ -257,63 +255,64 @@ int symbolic;
     /* Iterate through each object */
 
     for (i = 1; (unsigned int) i <= obj_count; i++) {
-        tx_printf ("\n");
+	tx_printf ("\n");
 
-        /* Get address of object */
+	/* Get address of object */
 
-        object_address = (unsigned long) get_object_address ((unsigned int) i);
+	object_address = (unsigned long) get_object_address ((unsigned int) i);
 
-        /* Display attributes */
+	/* Display attributes */
 
-        tx_printf ("%3d. Attributes: ", (int) i);
-        list = 0;
-        for (j = 0; j < (((unsigned int) header.version < V4) ? 4 : 6); j++) {
-            data = (unsigned int) read_data_byte (&object_address);
-            for (k = 7; k >= 0; k--) {
-                if ((data >> k) & 1) {
-					tx_printf ("%s", (list++) ? ", " : "");
-					if (print_attribute_name(attr_names_base, (int) ((j * 8) + (7 - k))))
-	                    tx_printf ("(%d)", (int) ((j * 8) + (7 - k)));
-					else
-	                    tx_printf ("%d", (int) ((j * 8) + (7 - k)));
-				}
-            }
-        }
-        if (list == 0)
-            tx_printf ("None");
-        tx_printf ("\n");
+	tx_printf ("%3d. Attributes: ", (int) i);
+	list = 0;
+	for (j = 0; j < (((unsigned int) header.version < V4) ? 4 : 6); j++) {
+	    data = (unsigned int) read_data_byte (&object_address);
+	    for (k = 7; k >= 0; k--) {
+		if ((data >> k) & 1) {
+		    tx_printf ("%s", (list++) ? ", " : "");
+		    if (print_attribute_name (attr_names_base,
+					      (int) ((j * 8) + (7 - k))))
+			tx_printf ("(%d)", (int) ((j * 8) + (7 - k)));
+		    else
+			tx_printf ("%d", (int) ((j * 8) + (7 - k)));
+		}
+	    }
+	}
+	if (list == 0)
+	    tx_printf ("None");
+	tx_printf ("\n");
 
-        /* Get object linkage information */
+	/* Get object linkage information */
 
-        if ((unsigned int) header.version < V4) {
-            pobj = (unsigned int) read_data_byte (&object_address);
-            nobj = (unsigned int) read_data_byte (&object_address);
-            cobj = (unsigned int) read_data_byte (&object_address);
-        } else {
-            pobj = (unsigned int) read_data_word (&object_address);
-            nobj = (unsigned int) read_data_word (&object_address);
-            cobj = (unsigned int) read_data_word (&object_address);
-        }
-        address = read_data_word (&object_address);
-        tx_printf ("     Parent object: %3d  ", (int) pobj);
+	if ((unsigned int) header.version < V4) {
+	    pobj = (unsigned int) read_data_byte (&object_address);
+	    nobj = (unsigned int) read_data_byte (&object_address);
+	    cobj = (unsigned int) read_data_byte (&object_address);
+	} else {
+	    pobj = (unsigned int) read_data_word (&object_address);
+	    nobj = (unsigned int) read_data_word (&object_address);
+	    cobj = (unsigned int) read_data_word (&object_address);
+	}
+	address = read_data_word (&object_address);
+	tx_printf ("     Parent object: %3d  ", (int) pobj);
 	tx_printf ("Sibling object: %3d  ", (int) nobj);
 	tx_printf ("Child object: %3d\n", (int) cobj);
-        tx_printf ("     Property address: %04lx\n", (unsigned long) address);
-        tx_printf ("         Description: \"");
+	tx_printf ("     Property address: %04lx\n", (unsigned long) address);
+	tx_printf ("         Description: \"");
 
-        /* If object has a description then display it */
+	/* If object has a description then display it */
 
-        if ((unsigned int) read_data_byte (&address))
-            (void) decode_text (&address);
-        tx_printf ("\"\n");
+	if ((unsigned int) read_data_byte (&address))
+	    (void) decode_text (&address);
+	tx_printf ("\"\n");
 
-        /* Print property list */
+	/* Print property list */
 
-        tx_printf ("          Properties:\n");
+	tx_printf ("          Properties:\n");
 	print_property_list (&address, property_names_base);
     }
 
-}/* show_objects */
+} /* show_objects */
 
 /*
  * get_object_address
@@ -335,13 +334,13 @@ unsigned int obj;
 
     offset = (unsigned int) header.objects;
     if ((unsigned int) header.version <= V3)
-        offset += ((P3_MAX_PROPERTIES - 1) * 2) + ((obj - 1) * O3_SIZE);
+	offset += ((P3_MAX_PROPERTIES - 1) * 2) + ((obj - 1) * O3_SIZE);
     else
-        offset += ((P4_MAX_PROPERTIES - 1) * 2) + ((obj - 1) * O4_SIZE);
+	offset += ((P4_MAX_PROPERTIES - 1) * 2) + ((obj - 1) * O4_SIZE);
 
     return (offset);
 
-}/* get_object_address */
+} /* get_object_address */
 
 /*
  * print_property_list
@@ -350,7 +349,8 @@ unsigned int obj;
  */
 
 #ifdef __STDC__
-static void print_property_list (unsigned long *address, unsigned long property_names_base)
+static void print_property_list (unsigned long *address,
+				 unsigned long property_names_base)
 #else
 static void print_property_list (address, property_names_base)
 unsigned long *address;
@@ -361,27 +361,30 @@ unsigned long property_names_base;
 
     /* Scan down the property address displaying each property */
 
-    for (data = read_data_byte (address); data; data = read_data_byte (address)) {
+    for (data = read_data_byte (address); data;
+	 data = read_data_byte (address)) {
 	tx_printf ("            ");
-	if (print_property_name(property_names_base, (int) (data & property_mask)))
-		tx_printf ("\n              ");
+	if (print_property_name (property_names_base,
+				 (int) (data & property_mask)))
+	    tx_printf ("\n              ");
 	else
-		tx_printf ("  ");
+	    tx_printf ("  ");
 	tx_printf ("[%2d] ", (int) (data & property_mask));
 	if ((unsigned int) header.version <= V3)
 	    count = ((data & property_size_mask) >> 5) + 1;
 	else if (data & 0x80)
-	    count = (unsigned int) read_data_byte (address) & property_size_mask;
+	    count =
+		(unsigned int) read_data_byte (address) & property_size_mask;
 	else if (data & 0x40)
 	    count = 2;
 	else
 	    count = 1;
-        while (count--)
-            tx_printf ("%02x ", (unsigned int) read_data_byte (address));
-        tx_printf ("\n");
+	while (count--)
+	    tx_printf ("%02x ", (unsigned int) read_data_byte (address));
+	tx_printf ("\n");
     }
 
-}/* print_property_list */
+} /* print_property_list */
 
 /*
  * show_tree
@@ -403,7 +406,7 @@ void show_tree ()
     /* Get objects configuration */
 
     configure_object_tables (&obj_count, &obj_table_base, &obj_table_end,
-                             &obj_data_base, &obj_data_end);
+			     &obj_data_base, &obj_data_end);
 
     tx_printf ("\n    **** Object tree ****\n\n");
 
@@ -411,30 +414,30 @@ void show_tree ()
 
     for (i = 1; i <= obj_count; i++) {
 
-        /* Get object address */
+	/* Get object address */
 
-        object_address = (unsigned long) get_object_address ((unsigned int) i);
+	object_address = (unsigned long) get_object_address ((unsigned int) i);
 
-        /* Get parent for this object */
+	/* Get parent for this object */
 
-        if ((unsigned int) header.version <= V3) {
-            object_address += O3_PARENT;
-            parent = read_data_byte (&object_address);
-        } else {
-            object_address += O4_PARENT;
-            parent = read_data_word (&object_address);
-        }
+	if ((unsigned int) header.version <= V3) {
+	    object_address += O3_PARENT;
+	    parent = read_data_byte (&object_address);
+	} else {
+	    object_address += O4_PARENT;
+	    parent = read_data_word (&object_address);
+	}
 
-        /*
+	/*
          * If object has no parent then it is a root object so display the tree
          * from the object.
          */
 
-        if (parent == 0)
-            print_object ((int) i, 0);
+	if (parent == 0)
+	    print_object ((int) i, 0);
     }
 
-}/* show_tree */
+} /* show_tree */
 
 /*
  * print_object
@@ -457,39 +460,40 @@ int depth;
 
     while (obj) {
 
-        /* Display object depth and description */
+	/* Display object depth and description */
 
-        for (i = 0; i < depth; i++)
-            tx_printf (" . ");
-        tx_printf ("[%3d] ", (int) obj);
-        print_object_desc (obj);
-        tx_printf ("\n");
+	for (i = 0; i < depth; i++)
+	    tx_printf (" . ");
+	tx_printf ("[%3d] ", (int) obj);
+	print_object_desc (obj);
+	tx_printf ("\n");
 
-        /* Get object address */
+	/* Get object address */
 
-        object_address = (unsigned long) get_object_address ((unsigned int) obj);
+	object_address =
+	    (unsigned long) get_object_address ((unsigned int) obj);
 
-        /* Get any child object and the next object at this level */
+	/* Get any child object and the next object at this level */
 
-        if ((unsigned int) header.version <= V3) {
-            address = object_address + O3_CHILD;
-            child = read_data_byte (&address);
-            address = object_address + O3_NEXT;
-            obj = read_data_byte (&address);
-        } else {
-            address = object_address + O4_CHILD;
-            child = read_data_word (&address);
-            address = object_address + O4_NEXT;
-            obj = read_data_word (&address);
-        }
+	if ((unsigned int) header.version <= V3) {
+	    address = object_address + O3_CHILD;
+	    child = read_data_byte (&address);
+	    address = object_address + O3_NEXT;
+	    obj = read_data_byte (&address);
+	} else {
+	    address = object_address + O4_CHILD;
+	    child = read_data_word (&address);
+	    address = object_address + O4_NEXT;
+	    obj = read_data_word (&address);
+	}
 
-        /* If this object has a child then print its tree */
+	/* If this object has a child then print its tree */
 
-        if (child)
-            print_object (child, depth + 1);
+	if (child)
+	    print_object (child, depth + 1);
     }
 
-}/* print_object */
+} /* print_object */
 
 /*
  * print_object_description
@@ -512,23 +516,24 @@ int obj;
 
     if (obj) {
 
-        /* Get object address */
+	/* Get object address */
 
-        object_address = (unsigned long) get_object_address ((unsigned int) obj);
+	object_address =
+	    (unsigned long) get_object_address ((unsigned int) obj);
 	if ((unsigned int) header.version <= V3)
-            address = object_address + O3_PROPERTY_OFFSET;
-        else
-            address = object_address + O4_PROPERTY_OFFSET;
+	    address = object_address + O3_PROPERTY_OFFSET;
+	else
+	    address = object_address + O4_PROPERTY_OFFSET;
 
-        /* Get the property address */
+	/* Get the property address */
 
-        address = read_data_word (&address);
+	address = read_data_word (&address);
 
-        /* Display the description if the object has one */
+	/* Display the description if the object has one */
 
-        if ((unsigned int) read_data_byte (&address))
-            (void) decode_text (&address);
+	if ((unsigned int) read_data_byte (&address))
+	    (void) decode_text (&address);
     }
     tx_printf ("\"");
 
-}/* print_object_desc */
+} /* print_object_desc */

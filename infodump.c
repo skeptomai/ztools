@@ -96,7 +96,7 @@ static void show_map ();
 #define OPTION_G 4
 #define OPTION_D 5
 #define OPTION_M 6
-#define MAXOPT   7
+#define MAXOPT 7
 
 #ifndef HAS_GETOPT
 /* getopt linkages */
@@ -123,7 +123,7 @@ char *argv[];
     int columns, options[MAXOPT];
     int symbolic;
 
-/* Clear all options */
+    /* Clear all options */
 
     for (i = 0; i < MAXOPT; i++)
 	options[i] = 0;
@@ -134,48 +134,48 @@ char *argv[];
 
     while ((c = getopt (argc, argv, "hafiotgmdsc:w:u:")) != EOF) {
 	switch (c) {
-	    case 'f':
-		for (i = 0; i < MAXOPT; i++)
-		    options[i] = 1;
-		break;
-	    case 'a':
-		options[OPTION_A] = 1;
-		break;
-	    case 'i':
-		options[OPTION_I] = 1;
-		break;
-	    case 'o':
-		options[OPTION_O] = 1;
-		break;
-	    case 't':
-		options[OPTION_T] = 1;
-		break;
-	    case 'g':
-		options[OPTION_G] = 1;
-		break;
-	    case 'm':
-		options[OPTION_M] = 1;
-		break;
-	    case 'd':
-		options[OPTION_D] = 1;
-		break;
-	    case 's':
-		symbolic = 1;
-		break;
-	    case 'c':
-		columns = atoi (optarg);
-		break;
-	    case 'w':
-		tx_set_width (atoi (optarg));
-		break;
-	    case 'u':
-	    	symbolic = 1;
-		init_symbols (optarg);
-		break;
-	    case 'h':
-	    case '?':
-	    default:
-		errflg++;
+	case 'f':
+	    for (i = 0; i < MAXOPT; i++)
+		options[i] = 1;
+	    break;
+	case 'a':
+	    options[OPTION_A] = 1;
+	    break;
+	case 'i':
+	    options[OPTION_I] = 1;
+	    break;
+	case 'o':
+	    options[OPTION_O] = 1;
+	    break;
+	case 't':
+	    options[OPTION_T] = 1;
+	    break;
+	case 'g':
+	    options[OPTION_G] = 1;
+	    break;
+	case 'm':
+	    options[OPTION_M] = 1;
+	    break;
+	case 'd':
+	    options[OPTION_D] = 1;
+	    break;
+	case 's':
+	    symbolic = 1;
+	    break;
+	case 'c':
+	    columns = atoi (optarg);
+	    break;
+	case 'w':
+	    tx_set_width (atoi (optarg));
+	    break;
+	case 'u':
+	    symbolic = 1;
+	    init_symbols (optarg);
+	    break;
+	case 'h':
+	case '?':
+	default:
+	    errflg++;
 	}
     }
 
@@ -202,7 +202,7 @@ char *argv[];
 
     return (0);
 
-}/* main */
+} /* main */
 
 /*
  * show_help
@@ -216,10 +216,15 @@ const char *program;
 #endif
 {
 
-    (void) fprintf (stderr, "usage: %s [options...] story-file [story-file...]\n\n", program);
-    (void) fprintf (stderr, "INFODUMP version 7/3 - display Infocom story file information. By Mark Howell\n");
+    (void) fprintf (stderr,
+		    "usage: %s [options...] story-file [story-file...]\n\n",
+		    program);
+    (void) fprintf (
+	stderr,
+	"INFODUMP version 7/3 - display Infocom story file information. By Mark Howell\n");
     (void) fprintf (stderr, "Works with V1 to V8 Infocom games.\n\n");
-    (void) fprintf (stderr, "\t-i   show game information in header (default)\n");
+    (void) fprintf (stderr,
+		    "\t-i   show game information in header (default)\n");
     (void) fprintf (stderr, "\t-a   show abbreviations\n");
     (void) fprintf (stderr, "\t-m   show data file map\n");
     (void) fprintf (stderr, "\t-o   show objects\n");
@@ -227,12 +232,17 @@ const char *program;
     (void) fprintf (stderr, "\t-g   show verb grammar\n");
     (void) fprintf (stderr, "\t-d   show dictionary\n");
     (void) fprintf (stderr, "\t-f   full report (all of the above)\n");
-    (void) fprintf (stderr, "\t-c n number of columns for dictionary display\n");
+    (void) fprintf (stderr,
+		    "\t-c n number of columns for dictionary display\n");
     (void) fprintf (stderr, "\t-w n display width (0 = no wrap)\n");
-    (void) fprintf (stderr, "\t-s Display Inform symbolic names in object and grammar displays\n");
-    (void) fprintf (stderr, "\t-u <file> Display symbols from file in object and grammar displays (implies -s)\n");
+    (void) fprintf (
+	stderr,
+	"\t-s Display Inform symbolic names in object and grammar displays\n");
+    (void) fprintf (
+	stderr,
+	"\t-u <file> Display symbols from file in object and grammar displays (implies -s)\n");
 
-}/* show_help */
+} /* show_help */
 
 /*
  * process_story
@@ -241,7 +251,8 @@ const char *program;
  */
 
 #ifdef __STDC__
-static void process_story (const char *name, int *options, int columns, int symbolic)
+static void process_story (const char *name, int *options, int columns,
+			   int symbolic)
 #else
 static void process_story (name, options, columns, symbolic)
 const char *name;
@@ -284,7 +295,7 @@ int symbolic;
 
     close_story ();
 
-}/* process_story */
+} /* process_story */
 
 /*
  * fix_dictionary
@@ -315,25 +326,27 @@ static void fix_dictionary ()
 
 	if ((address + 4) < (unsigned long) header.resident_size) {
 	    if ((unsigned int) header.version <= V3)
-		set_byte (address + 2, (unsigned int) get_byte (address + 2) | 0x80);
+		set_byte (address + 2,
+			  (unsigned int) get_byte (address + 2) | 0x80);
 	    else
-		set_byte (address + 4, (unsigned int) get_byte (address + 4) | 0x80);
-        }
+		set_byte (address + 4,
+			  (unsigned int) get_byte (address + 4) | 0x80);
+	}
 
 	address += word_size;
     }
 
-}/* fix_dictionary */
+} /* fix_dictionary */
 
 #ifdef __STDC__
-extern void configure_dictionary
-    (unsigned int *, unsigned long *, unsigned long *);
-extern void configure_abbreviations
-    (unsigned int *, unsigned long *, unsigned long *, unsigned long *,
-     unsigned long *);
-extern void configure_object_tables
-    (unsigned int *, unsigned long *, unsigned long *, unsigned long *,
-     unsigned long *);
+extern void configure_dictionary (unsigned int *, unsigned long *,
+				  unsigned long *);
+extern void configure_abbreviations (unsigned int *, unsigned long *,
+				     unsigned long *, unsigned long *,
+				     unsigned long *);
+extern void configure_object_tables (unsigned int *, unsigned long *,
+				     unsigned long *, unsigned long *,
+				     unsigned long *);
 #else
 extern void configure_dictionary ();
 extern void configure_abbreviations ();
@@ -348,16 +361,17 @@ static int compare_area ();
 
 #define MAX_AREA 20
 
-#define set_area(index, base_addr, end_addr, name_string) { \
-    if (index == MAX_AREA) {                                \
-	fprintf (stderr, "Area space exhausted!\n");        \
-	exit (EXIT_FAILURE);                                \
-    }                                                       \
-    areas[index].base = base_addr;                          \
-    areas[index].end = end_addr;                            \
-    areas[index].name = name_string;                        \
-    index++;                                                \
-}
+#define set_area(index, base_addr, end_addr, name_string)                      \
+    {                                                                          \
+	if (index == MAX_AREA) {                                               \
+	    fprintf (stderr, "Area space exhausted!\n");                       \
+	    exit (EXIT_FAILURE);                                               \
+	}                                                                      \
+	areas[index].base = base_addr;                                         \
+	areas[index].end = end_addr;                                           \
+	areas[index].name = name_string;                                       \
+	index++;                                                               \
+    }
 
 typedef struct area_s {
     unsigned long base;
@@ -379,7 +393,8 @@ static void show_map ()
 #endif
 {
     unsigned int abbr_count;
-    unsigned long abbr_table_base, abbr_table_end, abbr_data_base, abbr_data_end;
+    unsigned long abbr_table_base, abbr_table_end, abbr_data_base,
+	abbr_data_end;
     unsigned int word_count;
     unsigned long word_table_base, word_table_end;
     unsigned int obj_count;
@@ -407,23 +422,27 @@ static void show_map ()
 
     ext_table_base = header.mouse_table;
     if (ext_table_base) {
-    	ext_table_size = get_word(ext_table_base);
-    	ext_table_end = ext_table_base + 2 + ext_table_size * 2 - 1;
-	set_area (area, ext_table_base, ext_table_end, "Header extension table");
+	ext_table_size = get_word (ext_table_base);
+	ext_table_end = ext_table_base + 2 + ext_table_size * 2 - 1;
+	set_area (area, ext_table_base, ext_table_end,
+		  "Header extension table");
 	if (ext_table_size > 2) {
-	    unicode_table_base = get_word(ext_table_base + 6);
+	    unicode_table_base = get_word (ext_table_base + 6);
 	    if (unicode_table_base) {
-		unicode_table_end = unicode_table_base + get_byte(unicode_table_base)*2; 
-		set_area (area, unicode_table_base, unicode_table_end, "Unicode table");
+		unicode_table_end =
+		    unicode_table_base + get_byte (unicode_table_base) * 2;
+		set_area (area, unicode_table_base, unicode_table_end,
+			  "Unicode table");
 	    }
 	}
     }
-    
+
     configure_abbreviations (&abbr_count, &abbr_table_base, &abbr_table_end,
 			     &abbr_data_base, &abbr_data_end);
 
     if (abbr_count) {
-	set_area (area, abbr_table_base, abbr_table_end, "Abbreviation pointer table");
+	set_area (area, abbr_table_base, abbr_table_end,
+		  "Abbreviation pointer table");
 	set_area (area, abbr_data_base, abbr_data_end, "Abbreviation data");
     }
 
@@ -437,35 +456,49 @@ static void show_map ()
     set_area (area, obj_table_base, obj_table_end, "Object table");
     set_area (area, obj_data_base, obj_data_end, "Property data");
 
-    configure_parse_tables (&verb_count, &action_count, &parse_count, &verb_type, &prep_type,
-			    &verb_table_base, &verb_data_base,
-			    &action_table_base, &preact_table_base,
-			    &prep_table_base, &prep_table_end);
+    configure_parse_tables (
+	&verb_count, &action_count, &parse_count, &verb_type, &prep_type,
+	&verb_table_base, &verb_data_base, &action_table_base,
+	&preact_table_base, &prep_table_base, &prep_table_end);
 
     if ((verb_count > 0) && (verb_type != infocom6_grammar)) {
-	set_area (area, verb_table_base, verb_data_base - 1, "Grammar pointer table");
+	set_area (area, verb_table_base, verb_data_base - 1,
+		  "Grammar pointer table");
 	set_area (area, verb_data_base, action_table_base - 1, "Grammar data");
-	set_area (area, action_table_base, preact_table_base - 1, "Action routine table");
+	set_area (area, action_table_base, preact_table_base - 1,
+		  "Action routine table");
 	if (verb_type < inform_gv2) {
-		set_area (area, preact_table_base, prep_table_base - 1, (verb_type >= inform5_grammar) ? "Parsing routine table" : "Pre-action routine table");
-		set_area (area, prep_table_base, prep_table_end, "Preposition table");
+	    set_area (area, preact_table_base, prep_table_base - 1,
+		      (verb_type >= inform5_grammar)
+			  ? "Parsing routine table"
+			  : "Pre-action routine table");
+	    set_area (area, prep_table_base, prep_table_end,
+		      "Preposition table");
 	}
-    }
-    else if (verb_count > 0) {
-	set_area (area, verb_table_base, verb_table_base + 8 * verb_count - 1, "Verb grammar table");
+    } else if (verb_count > 0) {
+	set_area (area, verb_table_base, verb_table_base + 8 * verb_count - 1,
+		  "Verb grammar table");
 	set_area (area, verb_data_base, prep_table_base - 1, "Grammar entries");
-	set_area (area, action_table_base, preact_table_base - 1, "Action routine table");
-	set_area (area, preact_table_base, preact_table_base + action_count * 2 - 1, "Pre-action routine table");
+	set_area (area, action_table_base, preact_table_base - 1,
+		  "Action routine table");
+	set_area (area, preact_table_base,
+		  preact_table_base + action_count * 2 - 1,
+		  "Pre-action routine table");
     }
-    
-    configure_inform_tables(obj_data_end, &inform_version, &class_numbers_base, &class_numbers_end,
-    			    &property_names_base, &property_names_end, &attr_names_base, &attr_names_end);
-   
+
+    configure_inform_tables (obj_data_end, &inform_version, &class_numbers_base,
+			     &class_numbers_end, &property_names_base,
+			     &property_names_end, &attr_names_base,
+			     &attr_names_end);
+
     if (inform_version >= INFORM_6) {
-    	set_area(area, class_numbers_base, class_numbers_end, "Class Prototype Object Numbers");
-    	set_area(area, property_names_base, property_names_end, "Property Names Table");
+	set_area (area, class_numbers_base, class_numbers_end,
+		  "Class Prototype Object Numbers");
+	set_area (area, property_names_base, property_names_end,
+		  "Property Names Table");
 	if (inform_version >= INFORM_610) {
-    		set_area(area, attr_names_base, attr_names_end, "Attribute Names Table");
+	    set_area (area, attr_names_base, attr_names_end,
+		      "Attribute Names Table");
 	}
     }
 
@@ -474,13 +507,11 @@ static void show_map ()
 	      "Global variables");
 
     set_area (area, (unsigned long) header.resident_size,
-	      (unsigned long) file_size - 1,
-	      "Paged memory");
+	      (unsigned long) file_size - 1, "Paged memory");
 
     if (header.alphabet)
 	set_area (area, (unsigned long) header.alphabet,
-		  (unsigned long) header.alphabet + (26 * 3) - 1,
-		  "Alphabet");
+		  (unsigned long) header.alphabet + (26 * 3) - 1, "Alphabet");
 
     /* Sort areas */
 
@@ -494,15 +525,17 @@ static void show_map ()
     for (i = 0; i < area; i++) {
 	if (i && (areas[i].base - 1) > areas[i - 1].end)
 	    tx_printf ("%5lx  %5lx  %5lx\n",
-		       (unsigned long) (areas[i - 1].end + 1), (unsigned long) (areas[i].base - 1),
-		       (unsigned long) ((areas[i].base - 1) - (areas[i - 1].end + 1) + 1));
-	tx_printf ("%5lx  %5lx  %5lx  %s\n",
-		   (unsigned long) areas[i].base, (unsigned long) areas[i].end,
+		       (unsigned long) (areas[i - 1].end + 1),
+		       (unsigned long) (areas[i].base - 1),
+		       (unsigned long) ((areas[i].base - 1) -
+					(areas[i - 1].end + 1) + 1));
+	tx_printf ("%5lx  %5lx  %5lx  %s\n", (unsigned long) areas[i].base,
+		   (unsigned long) areas[i].end,
 		   (unsigned long) (areas[i].end - areas[i].base + 1),
 		   areas[i].name);
     }
 
-}/* show_map */
+} /* show_map */
 
 /*
  * compare_area
@@ -529,4 +562,4 @@ const void *b;
 
     return (0);
 
-}/* compare_area */
+} /* compare_area */
