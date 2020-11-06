@@ -600,6 +600,7 @@ void configure_zapf_parse_tables (unsigned int *verb_count,
     unsigned int dict_prep_count = 0;
     unsigned long next_entry;
     unsigned int entry_count;
+    unsigned short attempts = 3;
 
     *verb_table_base = 0;
     *verb_table_end = 0;
@@ -612,11 +613,12 @@ void configure_zapf_parse_tables (unsigned int *verb_count,
     *prep_table_end = 0;
     *verb_count = 0;
     *action_count = 0;
-    /* ZILF non-compact old grammar uses infocom_fixed.  It is yet to be determined if
-       new or compact grammar uses infocom_variable */
+    /* ZILF non-compact old grammar uses infocom_fixed.  If COMPACT-SYNTAX? is set, it's
+     * infocom_variable.  New grammar is infocom_v6 but not yet supported. */
     *parser_type = infocom_fixed;
-    /* ZILF non-compact grammar appears to always use prep_type 0; that is, the preposition
-       count is stored in a word, wasting a byte.  COMPACT-VOCABULARY? uses type 1. */
+    /* ZILF non-compact grammar uses prep_type 0; that is, the preposition
+       number is stored in a word, wasting a byte.  If COMPACT-VOCABULARY? is set, it
+       uses type 1. */
     *prep_type = 0;
     *parse_count = 0;
 
@@ -705,6 +707,14 @@ void configure_zapf_parse_tables (unsigned int *verb_count,
 	    if (i == dict_prep_count) {
 		*prep_table_base = address - 1;
 	    }
+	}
+	/* Due to a bug in ZILF, some prepositions can be missing from the table.  Allow
+           for this */
+	if (!*prep_table_base && *prep_type == 0 &&
+	    address >= header.resident_size && dict_prep_count > 0 &&
+	    --attempts > 0) {
+	    address = header.dynamic_size;
+	    dict_prep_count--;
 	}
     }
     /* Can't find the tables, sorry */
