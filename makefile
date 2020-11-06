@@ -2,7 +2,7 @@
 
 CC = cc
 NROFF	= nroff
-CLANG-FORMAT = clang-format
+CLANG_FORMAT = clang-format
 PYTHON3 = python3
 
 #Some systems declare getopt, others do not.  Pick whichever works
@@ -72,13 +72,13 @@ format: $(FORMATS)
 	rm *.c_f *.h_f
 
 .h.h_f .c.c_f:
-	$(CLANG-FORMAT) $$($(PYTHON3) get_format_range.py < $<) \
+	$(CLANG_FORMAT) $$($(PYTHON3) get_format_range.py < $<) \
 		--style=file -i "$<"
 	touch "$@"
 
 
 checkformat:
 	for i in $(SRCS) $(HDRS) ; do \
-	  $(CLANG-FORMAT) $$($(PYTHON3) get_format_range.py < $$i) \
+	  $(CLANG_FORMAT) $$($(PYTHON3) get_format_range.py < $$i) \
 	      --style=file -n "$$i" ; \
 	done
