@@ -1,4 +1,4 @@
-/* txd.c V7/3
+/* txd.c V7/4
  *
  * Z code disassembler for Infocom game files
  *
@@ -247,7 +247,7 @@ char *argv [];
 			argv[0]);
 	(void) fprintf (
 	    stderr,
-	    "TXD version 7/3 - disassemble Infocom story files. By Mark Howell\n");
+	    "TXD version 7/4 - disassemble Infocom story files. By Mark Howell\n");
 	(void) fprintf (stderr, "Works with V1 to V8 Infocom games.\n\n");
 	(void) fprintf (stderr,
 			"\t-a   generate alternate syntax used by Inform\n");

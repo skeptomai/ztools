@@ -1,5 +1,5 @@
 /*
- * infodump V7/3
+ * infodump V7/4
  *
  * Infocom data file dumper, etc. for V1 to V8 games.
  * Works on everything I have, except for parsing information in V6 games.
@@ -221,7 +221,7 @@ const char *program;
 		    program);
     (void) fprintf (
 	stderr,
-	"INFODUMP version 7/3 - display Infocom story file information. By Mark Howell\n");
+	"INFODUMP version 7/4 - display Infocom story file information. By Mark Howell\n");
     (void) fprintf (stderr, "Works with V1 to V8 Infocom games.\n\n");
     (void) fprintf (stderr,
 		    "\t-i   show game information in header (default)\n");
