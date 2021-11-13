@@ -367,7 +367,7 @@ extern int property_size_mask;
 
 extern zbyte_t *datap;
 
-extern option_inform;
+extern int option_inform;
 
 extern unsigned long file_size;
 
