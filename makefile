@@ -7,7 +7,7 @@ PYTHON3 = python3
 
 #Some systems declare getopt, others do not.  Pick whichever works
 #CFLAGS = -O -DHAS_GETOPT
-CFLAGS = -DHAS_VSNPRINTF -g --std=c89 -Wall -Wextra -Werror
+CFLAGS = -DHAS_VSNPRINTF -g --std=c89 -Wall -Wextra -Werror -Wno-implicit-fallthrough -Wno-implicit-function-declaration
 LDFLAGS =
 LIBS =
 
@@ -23,7 +23,7 @@ FORMATTEDMAN = $(MANPAGES:.1=.man)
 SRCS = check.c getopt.c infinfo.c infodump.c inforead.c pix2gif.c showdict.c \
 	showhead.c showobj.c showverb.c symbols.c txd.c txio.c
 HDRS = infinfo.h pix2gif.h symbols.h tx.h
-
+ntrrrrrrrrrrrrrrrrrrrrrr3,............-zssssssssssssssssssss
 CINC =
 COBJS = check.o
 

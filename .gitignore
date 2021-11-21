@@ -1,0 +1,7 @@
+*.o
+*.man
+.vscode/*
+check
+infodump
+pix2gif
+txd
